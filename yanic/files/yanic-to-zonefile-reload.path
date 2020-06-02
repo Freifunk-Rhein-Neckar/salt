@@ -1,0 +1,6 @@
+[Path]
+PathExists=/var/lib/knot/nodes.ffrn.de.zone
+PathChanged=/var/lib/knot/nodes.ffrn.de.zone
+
+[Install]
+WantedBy=multi-user.target

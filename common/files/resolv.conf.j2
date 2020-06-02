@@ -1,0 +1,14 @@
+########################################################################
+# File managed by Salt at <{{ source }}>.
+# Your changes will be overwritten.
+########################################################################
+
+{% if searchpaths -%}
+search {% for searchpath in searchpaths %}{{ searchpath }} {% endfor %}
+{%- endif %}
+{%- for nameserver in nameservers %}
+nameserver {{ nameserver }}
+{%- endfor %}
+{% if domain -%}
+domain {{ domain }}
+{%- endif %}

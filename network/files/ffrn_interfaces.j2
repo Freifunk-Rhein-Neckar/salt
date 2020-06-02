@@ -1,0 +1,59 @@
+#{{ ansible_managed }}
+
+auto ffrn-br
+iface ffrn-br inet static
+    hwaddress       {{ gw_mac }}
+    address         {{ v4_subnet_prefix ~ v4_group_prefix  ~ gw_id }}
+    netmask         255.255.0.0
+    bridge_stp      off
+    bridge_ports	none
+    #pre-up          /sbin/brctl addbr $IFACE
+{% for ip in ipv6_br_addr_list %}
+    up              /sbin/ip address add {{ ip }}/64 dev $IFACE
+{% endfor %}
+    up              /sbin/ip addr add {{ v4_subnet_prefix ~ v4_dns_prefix ~ gw_id }}/16 dev $IFACE
+    up              /sbin/ip -6 route add default via {{ v6_subnet_prefix }}::1 dev $IFACE table 6internal
+    up              /sbin/ip -6 route add {{ v6_subnet_prefix }}::/64 dev $IFACE table 6internal
+    up              /sbin/ip -6 rule add from {{ v6_subnet_prefix }}::/64 table 6internal
+    post-down       /sbin/brctl delbr $IFACE || true
+
+allow-hotplug ffrn-vpn
+iface ffrn-vpn inet6 manual
+    hwaddress       {{ gw_mac }}
+    post-up         /sbin/ifup ffrn-bat || true
+    post-up         batctl -m ffrn-bat if add $IFACE
+    post-up         /sbin/ip link set dev ffrn-bat up
+    pre-down        batctl -m ffrn-bat if del $IFACE
+
+allow-hotplug ffrn-bat
+iface ffrn-bat inet6 manual
+    hwaddress       {{ bat_mac }}
+    pre-up          /sbin/ifup ffrn-br || true
+    post-up         batctl -m $IFACE it 10000
+    #post-up        batctl -m $IFACE nc 0
+    post-up         batctl -m $IFACE mm 0
+    post-up         batctl -m $IFACE gw server  900mbit/900mbit
+    post-up         /sbin/ip link set dev $IFACE address {{ bat_mac }}
+    post-up         /sbin/brctl addif ffrn-br $IFACE || true
+    pre-down        /sbin/brctl delif ffrn-br $IFACE || true
+
+{% for interface in interfaces_bat %}
+auto {{ interface }}
+allow-hotplug {{ interface }}
+iface {{ interface }} inet manual
+    pre-up          /sbin/ifup ffrn-bat || true
+    up              /sbin/ip link set dev $IFACE up
+    up              /sbin/ip link set dev $IFACE mtu 1312
+    post-up         batctl -m ffrn-bat if add $IFACE
+    pre-down        batctl -m ffrn-bat if del $IFACE
+{% endfor %}
+
+{% for interface in interfaces_bridge %}
+auto {{ interface }}
+allow-hotplug {{ interface }}
+iface {{ interface }} inet manual
+    pre-up          /sbin/ifup ffrn-br || true
+    up              /sbin/brctl addif ffrn-br $IFACE
+    up              /sbin/ip link set up dev $IFACE
+    pre-down        /sbin/brctl delif ffrn-br $IFACE
+{% endfor %}

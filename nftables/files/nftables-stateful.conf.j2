@@ -1,0 +1,45 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+include "/etc/nftables.d/*.conf";
+
+table inet filter {
+    chain input {
+        type filter hook input priority 0;
+
+        # accept any localhost traffic
+        iif lo accept comment "accept loopback"
+        iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop connections to loopback not coming from loopback"
+        iif != lo ip6 daddr ::1/128 counter drop comment "drop connections to loopback not coming from loopback"
+
+        # accept traffic originated from us
+        ct state established,related accept
+
+        ip protocol icmp counter accept comment "accept all ICMP types"
+        ip6 nexthdr icmpv6 counter accept comment "accept all ICMP types"
+
+        # host specific rules
+{%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter') %}
+        {{ block_name }}
+{%- endfor %}
+
+        # accept ssh
+        tcp dport ssh ct state new accept comment "accept ssh"
+
+        # accept neighbour discovery otherwise IPv6 connectivity breaks.
+        ip6 nexthdr icmpv6 icmpv6 type { nd-neighbor-solicit,  nd-router-advert, nd-neighbor-advert } accept
+
+        # count and drop any other traffic
+        counter drop
+    }
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        counter comment "count dropped packets"
+    }
+    chain output {
+        type filter hook output priority 0; policy accept;
+        counter comment "count accepted packets"
+    }
+}
+

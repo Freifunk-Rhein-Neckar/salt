@@ -1,0 +1,4 @@
+# This file is managed by Salt, do not edit by hand!
+{% for domain in salt['pillar.get']('dehydrated:domains') -%}
+{{ domain }}
+{% endfor -%}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Reloads the nodes.ffrn.de zone on change
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=knot
+Group=knot
+ExecStart=/usr/sbin/knotc zone-reload nodes.ffrn.de

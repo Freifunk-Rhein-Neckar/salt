@@ -1,0 +1,11 @@
+[Unit]
+Description=Create Zonefile for nodes.ffrn.de all 2 Minutes
+Wants=network-online.target
+After=network-online.target
+
+[Timer]
+OnCalendar=*:0/2
+RandomizedDelaySec=20
+
+[Install]
+WantedBy=timers.target

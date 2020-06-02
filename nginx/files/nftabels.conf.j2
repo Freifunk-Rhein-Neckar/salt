@@ -1,0 +1,9 @@
+table inet filter {
+    chain input {
+        type filter hook input priority 0;
+
+        tcp dport http ct state new accept comment "accept http"
+        tcp dport https ct state new accept comment "accept https"
+
+    }
+}

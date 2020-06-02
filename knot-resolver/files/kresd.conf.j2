@@ -1,0 +1,39 @@
+-- SPDX-License-Identifier: CC0-1.0
+-- vim:syntax=lua:set ts=4 sw=4:
+-- Refer to manual: https://knot-resolver.readthedocs.org/en/stable/
+-- Salt managed
+
+-- verbose(false)
+
+-- Network interface configuration
+net.listen('127.0.0.1', 53, { kind = 'dns' })
+net.listen('::1', 53, { kind = 'dns', freebind = true })
+
+{{ salt['pillar.get']('knot-resolver:net:listen') }}
+
+net.listen('127.0.0.1', 853, { kind = 'tls' })
+net.listen('::1', 853, { kind = 'tls', freebind = true })
+
+-- Load useful modules
+modules = {
+        'hints > iterate',  -- Load /etc/hosts and allow custom root hints
+        'stats',            -- Track internal statistics
+        'predict',          -- Prefetch expiring/frequent records
+}
+
+-- DNSSEC validation failure logging
+modules.load('bogus_log')
+
+-- Cache size
+cache.size = 1 * GB
+
+extraTrees = policy.todnames(
+    {'geek.',
+     'o.',
+     'oss.',
+     'libre.'
+     })
+-- Beware: the rule order is important, as STUB is not a chain action.
+policy.add(policy.suffix(policy.FLAGS({'NO_CACHE'}),   extraTrees))
+policy.add(policy.suffix(policy.STUB({'2a01:4f8:1c0c:80c9::1', '169.239.202.202', '2a05:dfc7:5::53', '2a05:dfc7:5::5353'}), extraTrees))
+

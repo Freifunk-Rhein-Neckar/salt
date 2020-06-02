@@ -1,0 +1,21 @@
+# salt managed
+
+ddns-update-style none;
+
+default-lease-time 1800;
+max-lease-time 3600;
+
+authoritative;
+
+log-facility local7;
+
+subnet 10.142.0.0 netmask 255.255.0.0 {
+    range {{ salt['pillar.get']('dhcp_range') }};
+    option routers 10.142.0.{{ salt['pillar.get']('host:id:primary') }};
+    option domain-name-servers 10.142.52.1, 10.142.52.2;
+    option domain-name "user.freifunk-rhein-neckar.de";
+    option ntp-servers 10.142.0.{{ salt['pillar.get']('host:id:primary') }};
+    interface ffrn-br;
+#  option interface-mtu 1426;
+}
+

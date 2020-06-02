@@ -1,0 +1,12 @@
+[Unit]
+Description=Create Zonefile for nodes.ffrn.de
+Documentation=https://github.com/Freifunk-Rhein-Neckar/yanicOutputToZonefile
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=yanic-to-zonefile
+Group=yanic-to-zonefile
+WorkingDirectory=/var/lib/yanic-to-zonefile
+ExecStart=/var/lib/yanic-to-zonefile/yanicOutputToZonefile/generateZonefile.py
