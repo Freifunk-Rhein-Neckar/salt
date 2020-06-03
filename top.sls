@@ -76,10 +76,6 @@ base:
     - nginx
     - dehydrated
 
-  'netbox.ffrn.de':
-    - nginx
-    - dehydrated
-
   # 'test1.ffrn.de':
     # - nginx
     # - www.website
