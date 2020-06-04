@@ -1,5 +1,25 @@
 #!/usr/bin/env bash
 
+{%- if salt['pillar.get']('dehydrated:dns-01:tsig:name', '')|length %}
+{%- set dns01_server = salt['pillar.get']('dehydrated:dns-01:dns-server') %}
+{%- set dns01_domain = salt['pillar.get']('dehydrated:dns-01:domain') %}
+{%- set dns01_server = salt['pillar.get']('dehydrated:dns-01:dns-server') %}
+{%- set tsig_alg     = salt['pillar.get']('dehydrated:dns-01:tsig:alg') %}
+{%- set tsig_name    = salt['pillar.get']('dehydrated:dns-01:tsig:name') %}
+{%- set tsig_key     = salt['pillar.get']('dehydrated:dns-01:tsig:key') %}
+{%- endif %}
+
+{%- set deploy_cert  = salt['pillar.get']('dehydrated:deploy_cert', '') %}
+
+service_exists() {
+    local n=$1
+    if [[ $(systemctl list-units --all -t service --full --no-legend "$n.service" | cut -f1 -d' ') == $n.service ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 deploy_challenge() {
     local DOMAIN="${1}" TOKEN_FILENAME="${2}" TOKEN_VALUE="${3}"
 
@@ -22,6 +42,9 @@ deploy_challenge() {
 
     # Simple example: Use nsupdate with local named
     # printf 'server 127.0.0.1\nupdate add _acme-challenge.%s 300 IN TXT "%s"\nsend\n' "${DOMAIN}" "${TOKEN_VALUE}" | nsupdate -k /var/run/named/session.key
+    {%- if salt['pillar.get']('dehydrated:dns-01:tsig:name', '')|length %}
+    printf 'server {{ dns01_server }}\nzone {{ dns01_domain }}\nadd {{ dns01_domain }} TXT "%s"\nsend\n' "${TOKEN_VALUE}" | knsupdate -y {{ tsig_alg }}:{{ tsig_name }}:{{ tsig_key }}
+    {%- endif %}
 }
 
 clean_challenge() {
@@ -35,6 +58,9 @@ clean_challenge() {
 
     # Simple example: Use nsupdate with local named
     # printf 'server 127.0.0.1\nupdate delete _acme-challenge.%s TXT "%s"\nsend\n' "${DOMAIN}" "${TOKEN_VALUE}" | nsupdate -k /var/run/named/session.key
+    {%- if salt['pillar.get']('dehydrated:dns-01:tsig:name', '')|length %}
+    printf 'server {{ dns01_server }}\nzone {{ dns01_domain }}\ndel {{ dns01_domain }} TXT\nsend\n' | knsupdate -y {{ tsig_alg }}:{{ tsig_name }}:{{ tsig_key }}
+    {%- endif %}
 }
 
 sync_cert() {
@@ -87,7 +113,12 @@ deploy_cert() {
 
     # Simple example: Copy file to nginx config
     # cp "${KEYFILE}" "${FULLCHAINFILE}" /etc/nginx/ssl/; chown -R nginx: /etc/nginx/ssl
-    systemctl reload nginx
+
+    if service_exists nginx; then
+        systemctl reload nginx
+    fi
+
+    {{ deploy_cert }}
 }
 
 deploy_ocsp() {

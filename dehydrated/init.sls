@@ -5,37 +5,33 @@ dehydrated dependencies:
       - cronic
       - openssl
       - curl
+      - knot-dnsutils
 
 /etc/dehydrated:
   git.latest:
     - name: https://github.com/dehydrated-io/dehydrated.git
     - target: /etc/dehydrated
-    # - force_fetch: True
-    # - force_reset: True
 
 /var/www/dehydrated/:
   file.directory:
     - makedirs: True
 
-dehydrated-config:
+/etc/dehydrated/config:
   file.managed:
-    - name: /etc/dehydrated/config
     - source: salt://dehydrated/files/config.j2
-    - mode: 644
+    - mode: '0640'
     - template: jinja
 
-dehydrated-hook-nginx:
+/etc/dehydrated/hook.sh:
   file.managed:
-    - name: /etc/dehydrated/hook-nginx.sh
-    - source: salt://dehydrated/files/hook-nginx.sh
-    - mode: 744
-    # - template: jinja
+    - source: salt://dehydrated/files/hook.sh.j2
+    - mode: '0740'
+    - template: jinja
 
-dehydrated-domains:
+/etc/dehydrated/domains.txt:
   file.managed:
-    - name: /etc/dehydrated/domains.txt
     - source: salt://dehydrated/files/domains.txt.j2
-    - mode: 644
+    - mode: '0640'
     - template: jinja
 
 dehydrated-cron:
@@ -48,8 +44,18 @@ dehydrated-cron:
     - daymonth: '*/3'
     - comment: Renew TLS certificates
 
-firstinstall:
+first-install:
   cmd.run:
     - name: ./dehydrated --register --accept-terms
     - cwd: /etc/dehydrated/
     - creates: /etc/dehydrated/accounts
+
+/etc/dehydrated/dehydrated --account:
+  cmd.run:
+    - onchanges:
+      - file: /etc/dehydrated/config
+
+/etc/dehydrated/dehydrated --cron:
+  cmd.run:
+    - onchanges:
+      - file: /etc/dehydrated/domains.txt
