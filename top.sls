@@ -24,6 +24,7 @@ base:
 
   'resolver*.ffrn.de':
     - nftables
+    - dehydrated
     - knot-resolver
     - knot-resolver.nftables
 
