@@ -2,11 +2,11 @@
 include:
   - knot
 
-/var/lib/knot:
+{{ salt['pillar.get']('knot:zones-repository:remote') }}:
   git.latest:
-    - order: 1
-    - name: {{ salt['pillar.get']('knot:zones-repository:remote') }}
     - branch: {{ salt['pillar.get']('knot:zones-repository:branch', 'master') }}
-    - target: /var/lib/knot
+    - target: /var/lib/knot/zones
     - watch_in:
       - service: knot
+    - require:
+      - pkg: knot
