@@ -72,6 +72,7 @@ base:
     - yanic
     - nginx
     - dehydrated
+    - meshviewer
 
   'unifi.ffrn.de':
     - nginx
