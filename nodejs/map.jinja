@@ -1,0 +1,6 @@
+{% set nodejs = salt['grains.filter_by']({
+  'Debian-10': {
+    'apt_repo': 'deb https://deb.nodesource.com/node_13.x buster main',
+    'apt_key': 'nodejs-13.x.gpg'
+  }
+}, merge=salt['pillar.get']('nodejs'), grain='osfinger') %}
