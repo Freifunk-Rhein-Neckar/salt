@@ -1,0 +1,6 @@
+########################################################################
+# File managed by Salt at <{{ source }}>.
+# Your changes will be overwritten.
+########################################################################
+
+{{ salt.slsutil.serialize('toml', salt['pillar.get']('yanic:conf')) }}
