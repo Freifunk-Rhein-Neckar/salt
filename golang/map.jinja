@@ -1,0 +1,6 @@
+{% set golang = salt['grains.filter_by']({
+  'Debian-10': {
+    'packages': ['golang-1.11'],
+    'go_executable': '/usr/lib/go-1.11/bin/go'
+  },
+}, merge=salt['pillar.get']('golang'), grain='osfinger') %}
