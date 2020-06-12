@@ -8,6 +8,7 @@ base:
     - salt.minion
     - network
     - telegraf
+    - openssh
 
 # physical Servers
   'elsenz.ffrn.de,altneckar.ffrn.de,itter.ffrn.de':
