@@ -42,7 +42,7 @@ yanic-to-zonefile.timer:
       - file: /etc/systemd/system/yanic-to-zonefile.service
       - file: /etc/systemd/system/yanic-to-zonefile.timer
 
-/var/lib/knot/nodes.ffrn.de.zone:
+/var/lib/knot/zones/nodes.ffrn.de.zone:
   file.symlink:
     - target: /var/lib/yanic-to-zonefile/nodes.ffrn.de.zone
 
