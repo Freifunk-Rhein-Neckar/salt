@@ -1,0 +1,17 @@
+# Default settings
+[Defaults]
+# Listen port, defaults to 1001
+Port: 1001
+# Default multicast listen addresses
+MulticastLinkAddress: ff02::2:1001
+MulticastSiteAddress: ff05::2:1001
+# Default domain type
+DomainType: batadv
+
+{% for domain in salt['pillar.get']('domains').keys() %}
+[{% if domain == "dom0" %}ffrn{% else %}{{ domain }}{% endif %}]
+# Batman interface, mandatory
+BatmanInterface: {{ domain }}-bat
+# Other listen interfaces
+Interfaces: {{ domain }}-br, {{ domain }}-vlan{% for fastd_ifname in salt['fastd.ifnames_for_domain'](domain) %}, {{ fastd_ifname }}{% endfor %}
+{% endfor %}

@@ -1,0 +1,31 @@
+# Config File managed by salt
+
+log to syslog level debug;
+hide ip addresses yes;
+hide mac addresses yes;
+status socket "/run/fastd-dom{{ domain_id }}-vpn-{{ mtu }}.sock";
+
+interface "dom{{ domain_id }}-vpn-{{ mtu }}";
+{% for host in grains['fqdn_ip4'] %}
+bind {{ host }}:{{ port }};
+{%- endfor %}
+{% for host in grains['fqdn_ip6'] if not host.startswith('fe80:') %}
+bind [{{ host }}]:{{ port }};
+{%- endfor %}
+
+mtu {{ mtu }};
+
+secret "{{ salt['pillar.get']('fastd:secret') }}";
+{% for method in salt['pillar.get']('fastd:ciphers', ['null', 'salsa2012+umac']) %}
+method "{{ method }}";
+{%- endfor %}
+
+{% for group_name in salt['pillar.get']('domains:%s:fastd:peer_groups'|format(domain)) %}
+{%- set group = salt['pillar.get']('fastd:peer_groups:%s'|format(group_name)) %}
+peer group "{{ group_name }}" {
+  include peers from "/var/lib/fastd/peer_groups/{{ group_name }}";
+{%- if 'peer_limit' in group %}
+  peer limit {{ group['peer_limit'] }};
+{%- endif %}
+}
+{%- endfor %}

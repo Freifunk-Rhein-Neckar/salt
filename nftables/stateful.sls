@@ -7,5 +7,7 @@
     - mode: '0744'
     - makedirs: True
     - template: jinja
+    - watch_in:
+      - service: nftables
     - require:
       - pkg: nftables

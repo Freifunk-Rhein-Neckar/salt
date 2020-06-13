@@ -1,0 +1,17 @@
+PACKAGE_NAME=batman-adv
+PACKAGE_VERSION={{ pillar.batman_adv.version }}
+
+DEST_MODULE_LOCATION=/extra
+BUILT_MODULE_NAME=batman-adv
+BUILT_MODULE_LOCATION=net/batman-adv/
+
+{%- if pillar.batman_adv.debug %}
+MAKE="make KERNELPATH=${kernel_source_dir} CONFIG_BATMAN_ADV_DEBUG=y"
+{%- else %}
+MAKE="make KERNELPATH=${kernel_source_dir}"
+{%- endif %}
+{%- if pillar.batman_adv.dbgsym %}
+STRIP=no
+{%- endif %}
+CLEAN="make KERNELPATH=${kernel_source_dir} clean"
+AUTOINSTALL="yes"

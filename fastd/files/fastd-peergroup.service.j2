@@ -1,0 +1,8 @@
+[Unit]
+Description=Run the fastd peergroup update script for group {{ group }}
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/fastd-peergroup-update-{{ group }}
+User=root
+

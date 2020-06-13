@@ -4,13 +4,16 @@ base:
     - apt
     - common.resolv
     - common.packages
+    - common.kernel
     - common.datetime
     - salt.minion
     - network
     - telegraf
     - openssh
     - mosh
+{% if grains['virtual'] != 'LXC' %}
     - chrony
+{% endif %}
 
 # physical Servers
   'elsenz.ffrn.de,altneckar.ffrn.de,itter.ffrn.de':
@@ -18,14 +21,6 @@ base:
     - telegraf
     - wireguard
     - telegraf.inputs.smart
-
-  # 'v6upstream.ffrn.de':
-  #   - telegraf
-
-  'gw*.freifunk-rhein-neckar.de':
-    - fastd
-    - network.bridge
-    - dhcpv4
 
   'resolver*.ffrn.de':
     - nftables
@@ -91,7 +86,32 @@ base:
     - nginx
     - dehydrated
 
-  # 'test1.ffrn.de':
+  'gw*.ffrn.de':
+    - nftables
+    - network.bridge
+    - network.sysctl
+    - network.batman-adv
+    - network.domains
+    - dhcpv4
+    - fastd
+    - mesh-announce
+
+  'test1.ffrn.de':
+    - nftables
+    # - network.bridge
+    # - network.sysctl
+    # - network.batman-adv
+    # - network.domains
+    # - dhcpv4
+    # - fastd
+
+    # - yanic
+    # - nginx
+    # - dehydrated
+    # - meshviewer
+
+
+    # - dhcpv4
     # - nginx
     # - www.website
     # - telegraf

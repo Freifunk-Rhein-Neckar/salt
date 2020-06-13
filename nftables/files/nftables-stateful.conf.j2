@@ -2,19 +2,19 @@
 
 flush ruleset
 
-include "/etc/nftables.d/*.conf";
+{%- set public_interface = salt['pillar.get']('nftables:public_interface', 'eth0') %}
 
 table inet filter {
     chain input {
-        type filter hook input priority 0;
+        type filter hook input priority 0; policy drop;
 
         # accept any localhost traffic
         iif lo accept comment "accept loopback"
         iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop connections to loopback not coming from loopback"
         iif != lo ip6 daddr ::1/128 counter drop comment "drop connections to loopback not coming from loopback"
 
-        # accept traffic originated from us
-        ct state established,related accept
+        ct state invalid counter drop comment "drop invalid"
+        ct state established,related counter accept comment "accept traffic originated from us"
 
         ip protocol icmp counter accept comment "accept all ICMP types"
         ip6 nexthdr icmpv6 counter accept comment "accept all ICMP types"
@@ -22,20 +22,19 @@ table inet filter {
         # host specific rules
 {%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter') %}
         {{ block_name }}
-{%- endfor %}
+{% endfor %}
 
-        # accept ssh
         tcp dport ssh ct state new accept comment "accept ssh"
 
         # accept neighbour discovery otherwise IPv6 connectivity breaks.
-        ip6 nexthdr icmpv6 icmpv6 type { nd-neighbor-solicit,  nd-router-advert, nd-neighbor-advert } accept
+        ip6 nexthdr icmpv6 icmpv6 type { nd-neighbor-solicit,  nd-router-advert, nd-neighbor-advert } accept comment "accept neighbour discovery"
 
-        # count and drop any other traffic
-        counter drop
+        # log prefix "[nftables] Input: " flags all
     }
     chain forward {
         type filter hook forward priority 0; policy drop;
-        counter comment "count dropped packets"
+        # log prefix "[nftables] forward: " flags all
+        # counter comment "count packets"
     }
     chain output {
         type filter hook output priority 0; policy accept;
@@ -43,3 +42,4 @@ table inet filter {
     }
 }
 
+include "/etc/nftables.d/*.conf";

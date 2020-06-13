@@ -1,0 +1,26 @@
+{% for domain in salt['pillar.get']('domains', {}).values() %}
+{#  ('uplink', '01'), #}
+{%- for link_type, mac_suffix in [
+  ('bat', '02'),
+  ('vpn', '03'),
+  ('br', '04'),
+  ('vlan', '05'),
+] %}
+
+# dom{{ domain['domain_id'] }}-{{ link_type }})
+SUBSYSTEM=="net", \
+  ATTR{{ '{' }}address{{ '}' }}=="da:ff:{{ "%02d" % domain['domain_id'] }}:00:*:{{ mac_suffix }}", \
+  ATTR{{ '{' }}type{{ '}' }}=="1", KERNEL=="eth*", NAME="dom{{ domain['domain_id'] }}-{{link_type}}"
+
+{% endfor -%}
+{%- endfor %}
+
+# Services (legacy)
+SUBSYSTEM=="net", \
+  ATTR{{ '{' }}address{{ '}' }}=="da:ff:00:00:*:06", \
+  ATTR{{ '{' }}type{{ '}' }}=="1", KERNEL=="eth*", NAME="services"
+
+# Services
+SUBSYSTEM=="net", \
+  ATTR{{ '{' }}address{{ '}' }}=="da:ff:ff:ff:*:06", \
+  ATTR{{ '{' }}type{{ '}' }}=="1", KERNEL=="eth*", NAME="services"

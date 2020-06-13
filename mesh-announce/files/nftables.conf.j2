@@ -1,0 +1,8 @@
+
+table inet filter {
+    chain input {
+        {%- for domain in salt['pillar.get']('domains').keys() %}
+        iifname { {{ domain }}-br, {{ domain }}-vlan, {{ " ".join(salt['fastd.ifnames_for_domain'](domain)) }} } udp dport 1001 counter accept
+        {%- endfor %}
+    }
+}

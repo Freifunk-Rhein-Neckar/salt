@@ -1,0 +1,7 @@
+{%- set ports = salt['fastd.ports_for_domain'](domain) %}
+
+table inet filter {
+    chain input {
+        ip version 4 iifname "{{ domain }}-br" udp sport 68 udp dport 67 counter accept comment "accept dhcp"
+    }
+}

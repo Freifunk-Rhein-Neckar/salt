@@ -1,0 +1,12 @@
+[Unit]
+Description=Respondd Service
+After=network.target
+
+[Service]
+Environment=PATH=/usr/sbin:/usr/bin:/usr/local/bin:/sbin:/usr/local/sbin
+ExecStart=/opt/mesh-announce/respondd.py -d /opt/mesh-announce/providers -f /etc/mesh-announce/mesh-announce.conf
+Restart=always
+WorkingDirectory=/opt/mesh-announce
+
+[Install]
+WantedBy=multi-user.target
