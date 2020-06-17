@@ -14,6 +14,7 @@ base:
   'elsenz.ffrn.de,altneckar.ffrn.de,itter.ffrn.de':
     - match: list
     - telegraf
+    - wireguard
 
   # 'v6upstream.ffrn.de':
   #   - telegraf
@@ -55,6 +56,7 @@ base:
     - knot
     - dehydrated
     - docker.compose
+    - wireguard
   
   'tickets.ffrn.de':
     - nftables
