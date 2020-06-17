@@ -49,8 +49,8 @@ base:
     - www.firmware
 
   'stats.ffrn.de':
-    # - nftables       # not working with docker somehow
-    # - nginx.nftables # not working with docker somehow
+    # - nftables       # not working with docker
+    # - nginx.nftables # not working with docker
     - nginx
     - knot
     - dehydrated
@@ -63,9 +63,9 @@ base:
     - dehydrated
 
   'forum.ffrn.de':
-    - nftables
+    # - nftables       # not working with docker
+    # - nginx.nftables # not working with docker
     - nginx
-    - nginx.nftables
     - dehydrated
     - docker
 
