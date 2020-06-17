@@ -1,5 +1,8 @@
 ---
 
+wireguard:
+  pkg.installed: []
+
 /usr/local/bin/watch-wg:
   file.managed:
     - source: salt://wireguard/files/watch-wg.sh
