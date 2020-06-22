@@ -7,7 +7,8 @@ include:
 yanic:
   user.present:
     - home: /var/lib/yanic
-    - gid_from_name: True
+    - gid: yanic
+    - usergroup: True
     - shell: /usr/sbin/nologin
   git.latest:
     - name: https://github.com/FreifunkBremen/yanic
