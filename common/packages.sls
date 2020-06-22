@@ -28,6 +28,9 @@ packages_base:
 {% endif %}
       - rsync
       - screen
+{%- if salt['hardware.is_physical']() %}
+      - smartmontools
+{%- endif %}
       - strace
       - tcpdump
       - tig
