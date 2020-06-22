@@ -15,6 +15,7 @@ base:
     - match: list
     - telegraf
     - wireguard
+    - telegraf.inputs.smart
 
   # 'v6upstream.ffrn.de':
   #   - telegraf
