@@ -8,6 +8,7 @@ packages_base:
       - debian-goodies
       - dnsutils
       - ethtool
+      - fd-find
       - htop
       - iperf3
       - iputils-arping
