@@ -7,9 +7,7 @@ packages_base:
       - curl
       - debian-goodies
       - dnsutils
-{%- if salt['hardware.is_physical']() %}
       - ethtool
-{%- endif %}
       - htop
       - iperf3
       - iputils-arping
