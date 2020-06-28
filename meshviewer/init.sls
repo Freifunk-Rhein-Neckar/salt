@@ -73,6 +73,7 @@ meshviewer_build:
 meshviewer_empty_srv_www:
    file.directory:
     - name: /var/www/meshviewer
+    - makedirs: True
     - clean: True
     - onchanges:
       - cmd: meshviewer_build
