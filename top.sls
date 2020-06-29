@@ -9,6 +9,7 @@ base:
     - network
     - telegraf
     - openssh
+    - mosh
 
 # physical Servers
   'elsenz.ffrn.de,altneckar.ffrn.de,itter.ffrn.de':
