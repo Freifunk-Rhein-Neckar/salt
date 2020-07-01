@@ -22,6 +22,7 @@ packages_base:
       - needrestart
       - netcat-openbsd
       - psmisc
+      - python3-pip
 {% if grains['oscodename'] == "buster" %}
       - ripgrep
 {% endif %}
