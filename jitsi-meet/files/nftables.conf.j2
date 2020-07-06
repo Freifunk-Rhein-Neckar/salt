@@ -1,0 +1,10 @@
+table inet filter {
+    chain input {
+
+        tcp dport 4443 counter accept comment "jitsi: fallback network video+audio communications"
+        tcp dport 4445 counter accept comment "jitis: turnserver (https)"
+        tcp dport 4446 counter accept comment "jitis: turnserver"
+        udp dport 10000 counter accept comment "jitsi: general network video+audio communications"
+
+    }
+}

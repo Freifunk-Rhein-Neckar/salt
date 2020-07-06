@@ -80,6 +80,13 @@ base:
     - dehydrated
     - meshviewer
 
+  'meet.ffrn.de':
+    - nftables
+    - nginx.nftables
+    - nginx
+    - dehydrated
+    - jitsi-meet
+
   'unifi.ffrn.de':
     - nginx
     - dehydrated
