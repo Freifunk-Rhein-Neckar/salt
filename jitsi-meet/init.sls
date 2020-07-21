@@ -2,7 +2,7 @@
 {% import 'nftables/macro.sls' as nftables %}
 {% set domain = "meet.ffrn.de" %}
 
-{{ nftables.include('40-jitsi-meet', 'salt://jitsi-meet/files/nftabels.conf.j2' ) }}
+{{ nftables.include('40-jitsi-meet', 'salt://jitsi-meet/files/nftables.conf.j2' ) }}
 
 jitsi-videobridge2:
   service.running:
