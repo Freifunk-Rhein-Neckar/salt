@@ -1,0 +1,21 @@
+{%- set nets4 = salt['pillar.get']('domains:%s:ip4'|format(domain)).keys() %}
+{%- set nets6 = salt['pillar.get']('domains:%s:ip6'|format(domain)).keys() %}
+{%- set mtu = salt['pillar.get']('domains:%s:mtu'|format(domain)) %}
+
+table ip nat {
+    # chain PREROUTING {
+    #     type nat hook prerouting priority -100; policy accept;
+    # }
+
+    chain POSTROUTING {
+        type nat hook postrouting priority 100; policy accept;
+        oifname "{{ salt['pillar.get']('nftables:public_interface', 'eth0') }}" ip saddr {{ ' '.join(nets4) }} counter snat to {{ grains['fqdn_ip4'][0] }};
+    }
+}
+
+table inet filter {
+    chain forward {
+        iifname "dom{{ domain_id }}-br" ip saddr {{ " ".join(nets4) }} tcp dport 25 counter reject comment "don't allow smtp - {{ domain }}"
+        iifname "dom{{ domain_id }}-br" ip saddr {{ " ".join(nets4) }} counter accept
+    }
+}

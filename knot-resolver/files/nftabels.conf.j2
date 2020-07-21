@@ -12,10 +12,8 @@ define allow_ipv4 = 10.142.0.0/16
 
 table inet filter {
     chain input {
-        type filter hook input priority 0;
-
-        meta l4proto { tcp, udp } @th,16,16 53 ip6 saddr $allow_ipv6 accept comment "accept knot-resolver (IPv4)"
-        meta l4proto { tcp, udp } @th,16,16 53 ip  saddr $allow_ipv4 accept comment "accept knot-resolver (IPv6)"
+        meta l4proto { tcp, udp } @th,16,16 53 ip6 saddr $allow_ipv6 accept comment "accept knot-resolver (IPv6)"
+        meta l4proto { tcp, udp } @th,16,16 53 ip  saddr $allow_ipv4 accept comment "accept knot-resolver (IPv4)"
     }
 }
 

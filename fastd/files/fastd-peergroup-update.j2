@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cd /var/lib/fastd/peer_groups
+
+HEAD_PRE=$(git -C {{ group }} rev-parse HEAD)
+
+git -C {{ group }} fetch
+git -C {{ group }} reset --hard origin/{{ salt['pillar.get']('fastd:peer_groups:%s:git_branch'|format(group)) }} --
+
+HEAD_POST=$(git -C {{ group }} rev-parse HEAD)
+
+if [ "$HEAD_PRE" != "$HEAD_POST" ]; then
+	{%- for domain in salt['pillar.get']('domains').values() %}
+	{%- for instance in domain['fastd']['instances'] if group in domain['fastd']['peer_groups'] %}
+	systemctl reload fastd@dom{{ domain['domain_id'] }}_{{ instance['mtu'] }}
+	{%- endfor %}{% endfor %}
+fi
+
+exit 0

@@ -4,3 +4,7 @@ ifupd_ensure_include:
     - name: /etc/network/interfaces
     - text: |
         source /etc/network/interfaces.d/*.cfg
+
+
+/etc/network/interfaces.d:
+  file.directory: []

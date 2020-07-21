@@ -1,0 +1,7 @@
+{%- set ports = salt['fastd.ports_for_domain'](domain) %}
+
+table inet filter {
+    chain input {
+        iifname "{{ salt['pillar.get']('nftables:public_interface', 'eth0') }}" udp dport { {{ " ".join(ports) }} } counter accept comment "accept fastd - {{ domain }}"
+    }
+}

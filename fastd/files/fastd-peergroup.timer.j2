@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the fastd peergroup update script for group {{ group }} every 5 minutes
+
+[Timer]
+# execute this every 5th minute: 0, 5, 10, 15, ...
+OnCalendar=*-*-* *:0/5:00
+
+[Install]
+WantedBy=timers.target
+

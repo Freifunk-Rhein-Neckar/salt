@@ -1,0 +1,24 @@
+{% for cidr, subnet in salt['pillar.get']('domains:%s:ip4'|format(domain), {}).items() %}
+{% set domain_id = salt['pillar.get']('domains:%s:domain_id'|format(domain)) %}
+{% set dns = salt['pillar.get']('domains:%s:dns'|format(domain)) %}
+subnet {{ subnet['network'] }} netmask {{ subnet['netmask'] }} {
+	interface dom{{ domain_id }}-br;
+
+	option domain-name "{{ dns['domain'] }}";
+	option domain-name-servers {{ ", ".join(dns['nameservers4']) }};
+	option domain-search {% for searchdomain in dns['search'] %}"{{ searchdomain }}"{% if not loop.last %}, {% endif %}{% endfor %};
+	option routers {{ subnet['address'] }};
+
+	# correct for batman-adv v15 encapsulation overhead (up to 32 byte)
+	option interface-mtu {{ salt['pillar.get']('domains:%s:mtu'|format(domain)) - 32 }};
+
+	append dhcp-parameter-request-list 1,3,6,12,15,26,28,51,54;
+
+	default-lease-time {{ salt['pillar.get']('dhcp4:lease:renew', '1800') }};
+	max-lease-time {{ salt['pillar.get']('dhcp4:lease:max', '7200') }};
+
+	{%- for pool in salt['pillar.get']('domains:%s:dhcp4:pools'|format(domain)) %}
+	range {{ pool['first'] }} {{ pool['last'] }};
+	{%- endfor %}
+}
+{%- endfor %}

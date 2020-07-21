@@ -1,0 +1,14 @@
+# https://github.com/terryburton/isc-dhcp-debian/blob/systemd-simple/debian/isc-dhcp-server.isc-dhcp-server-v6.service
+[Unit]
+Description=ISC DHCP Server for IPv4 (dhcpd.conf)
+After=network.target
+ConditionPathExists=/etc/dhcp/dhcpd.conf
+
+[Service]
+EnvironmentFile=-/etc/default/isc-dhcp-server
+ExecStartPre=/usr/bin/touch /var/lib/dhcp/dhcpd.leases
+ExecStartPre=/usr/sbin/dhcpd -f -t -4 -q $OPTIONS -cf /etc/dhcp/dhcpd.conf
+ExecStart=/usr/sbin/dhcpd -f -4 -q $OPTIONS -cf /etc/dhcp/dhcpd.conf $INTERFACESv4
+
+[Install]
+WantedBy=multi-user.target

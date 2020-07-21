@@ -1,0 +1,28 @@
+{%- set public_interface = salt['pillar.get']('nftables:public_interface', 'eth0') %}
+
+table inet filter {
+    chain forward {
+        ct state related,established counter accept comment "accept related and established"
+
+        oifname "{{ public_interface }}" ip daddr 0.0.0.0/8 counter drop comment "RFC 1122 'this' network"
+        oifname "{{ public_interface }}" ip daddr 10.0.0.0/8 counter drop comment "RFC 1918 private space"
+        oifname "{{ public_interface }}" ip daddr 100.64.0.0/10 counter drop comment "RFC 6598 Carrier grade nat space"
+        oifname "{{ public_interface }}" ip daddr 127.0.0.0/8 counter drop comment "RFC 1122 localhost"
+        oifname "{{ public_interface }}" ip daddr 169.254.0.0/16 counter drop comment "RFC 3927 link local"
+        oifname "{{ public_interface }}" ip daddr 172.16.0.0/12 counter drop comment "RFC 1918 private space "
+        oifname "{{ public_interface }}" ip daddr 192.168.0.0/16 counter drop comment "RFC 1918 private space"
+        oifname "{{ public_interface }}" ip daddr 192.0.0.0/24 counter drop comment "IETF Protocol Assignments"
+        oifname "{{ public_interface }}" ip daddr 192.0.2.0/24 counter drop comment "RFC 5737 TEST-NET-1"
+        oifname "{{ public_interface }}" ip daddr 192.88.99.0/24 counter drop comment "RFC 7526 6to4 anycast relay"
+        oifname "{{ public_interface }}" ip daddr 192.168.0.0/16 counter drop comment "RFC 1918 private space"
+        oifname "{{ public_interface }}" ip daddr 198.18.0.0/15 counter drop comment "RFC 2544 benchmarking"
+        oifname "{{ public_interface }}" ip daddr 198.51.100.0/24 counter drop comment "RFC 5737 TEST-NET-2"
+        oifname "{{ public_interface }}" ip daddr 203.0.113.0/24 counter drop comment "RFC 5737 TEST-NET-3"
+        oifname "{{ public_interface }}" ip daddr 240.0.0.0/4 counter drop comment "reserved"        
+        oifname "{{ public_interface }}" ip daddr { 6.0.0.0/7, 11.0.0.0/8, 21.0.0.0/8, 22.0.0.0/8, 26.0.0.0/8 } counter drop comment "DoD 1"
+        oifname "{{ public_interface }}" ip daddr { 28.0.0.0/7, 30.0.0.0/8, 33.0.0.0/8, 55.0.0.0/8, 214.0.0.0/7 } counter drop comment "DoD 2"
+        oifname "{{ public_interface }}" ip daddr 25.0.0.0/8 counter drop comment "UK Ministry of Defence"
+
+        ether saddr {{ salt['pillar.get']('abuseschleuder') }} counter drop comment "Abuseschleuder"
+    }
+}
