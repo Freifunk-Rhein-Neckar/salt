@@ -14,15 +14,16 @@ mesh-announce:
     - watch:
       - file: /etc/mesh-announce/mesh-announce.conf
       - file: /etc/systemd/system/mesh-announce.service
-      - git: https://git.darmstadt.ccc.de/ffda/infra/mesh-announce.git
 
 https://git.darmstadt.ccc.de/ffda/infra/mesh-announce.git:
   git.latest:
     - target: /opt/mesh-announce
     - force_fetch: true
     - force_reset: true
-    - refspec_branch: master
-    - rev: master
+    - refspec_branch: sudo
+    - rev: sudo
+    - watch_in:
+      - service: mesh-announce
 
 /etc/mesh-announce/mesh-announce.conf:
   file.managed:
@@ -40,6 +41,14 @@ https://git.darmstadt.ccc.de/ffda/infra/mesh-announce.git:
     - user: root
     - group: root
     - mode: '0644'
+
+/etc/sudoers.d/mesh-announce:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: '0440'
+    - source: salt://mesh-announce/files/mesh-announce.sudoers.j2
+    - check_cmd: /usr/sbin/visudo -c -f
 
 mesh-announce_deps:
   pkg.installed:
