@@ -20,6 +20,8 @@ batman-adv_git:
     - target: /usr/src/batman-adv-{{ pillar.batman_adv.version }}
     - rev: {{ pillar.batman_adv.commit }}
     - force_reset: True
+    - refspec_branch: maint
+    - refspec_tag: "*"
     - require:
       - pkg: batman-adv_pkgs
 
