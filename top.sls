@@ -70,6 +70,7 @@ base:
     - docker
 
   'map.ffrn.de':
+    - network.batman-adv
     - yanic
     - nginx
     - dehydrated
