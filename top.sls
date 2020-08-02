@@ -24,9 +24,13 @@ base:
 
   'resolver*.ffrn.de':
     - nftables
+    - network.conntrack
     - dehydrated
     - knot-resolver
     - knot-resolver.nftables
+
+  'v6upstream.ffrn.de':
+    - knot-resolver
 
   'tools*.ffrn.de':
     - telegraf
@@ -91,6 +95,7 @@ base:
     - nftables
     - network.bridge
     - network.sysctl
+    - network.conntrack
     - network.batman-adv
     - network.domains
     - dhcpv4
