@@ -1,0 +1,20 @@
+{%- for domain_key, domain_val in salt['pillar.get']('domains', {}).items() %}
+interface {{ domain_key }}-br {
+    IgnoreIfMissing on;
+    AdvSendAdvert on;
+    MinDelayBetweenRAs 6;
+    MaxRtrAdvInterval 30;
+    AdvDefaultLifetime 9000;
+    {#- Pillar MTU - 18 (batadv v15) - 14 (Ethernet) = AdvLinkMTU #}
+    AdvLinkMTU {{ domain_val['mtu'] - 18 - 14 }};
+    AdvOtherConfigFlag on;
+    {%- for ipv6_key, ip6_val in domain_val['ip6'].items() %}
+    prefix {{ ipv6_key }} { };
+    {%- endfor %}
+    # DNS: {% for dns_nameserver6 in domain_val['dns']['nameservers6'] %}{{ dns_nameserver6 }} {% endfor %}
+    RDNSS 2a01:4f8:140:4093:0:c0ff:fea8:7b21 2a01:4f8:172:1713::116
+    {
+        FlushRDNSS off;
+    };
+};
+{%- endfor %}

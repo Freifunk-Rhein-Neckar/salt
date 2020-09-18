@@ -31,6 +31,7 @@ base:
 
   'v6upstream.ffrn.de':
     - knot-resolver
+    - radvd
 
   'tools*.ffrn.de':
     - telegraf
