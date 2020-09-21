@@ -136,6 +136,9 @@ base:
     - fastd
     - mesh-announce
 
+  'nat64.ffrn.de':
+    - jool
+
   'test*.ffrn.de':
     - nftables
     - systemd.backports
