@@ -6,6 +6,7 @@ base:
     - common.packages
     - common.kernel
     - common.datetime
+    - common.systemd
     - salt.minion
     - network
     - telegraf
