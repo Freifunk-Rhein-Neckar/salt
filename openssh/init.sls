@@ -2,7 +2,7 @@
 openssh-server:
   pkg.installed: []
   service.running:
-    - name: sshd
+    - name: ssh
     - enable: True
     - reload: True
     - watch:
