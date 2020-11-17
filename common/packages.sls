@@ -30,6 +30,7 @@ packages_base:
       - screen
 {%- if salt['hardware.is_physical']() %}
       - smartmontools
+      - nvme-cli
 {%- endif %}
       - strace
       - tcpdump
