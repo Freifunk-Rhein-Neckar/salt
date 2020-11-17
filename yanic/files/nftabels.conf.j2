@@ -1,0 +1,8 @@
+table inet filter {
+    chain input {
+{% for domain in salt['pillar.get']('domains', {}).values() %}
+        iifname "dom{{ domain['domain_id'] }}-br" ip6 saddr fe80::/64 udp dport 10001 accept comment "yanic dom{{ domain['domain_id'] }}"
+{%- endfor %}
+
+    }
+}
