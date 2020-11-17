@@ -20,11 +20,13 @@ table inet filter {
         ip6 nexthdr icmpv6 counter accept comment "accept all ICMP types"
 
         # host specific rules
-{%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter') %}
+{%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter:input') %}
         {{ block_name }}
-{% endfor %}
+{%- endfor %}
 
         tcp dport ssh ct state new accept comment "accept ssh"
+
+        tcp dport 5201 counter accept comment "accept iperf3"
 
         # accept neighbour discovery otherwise IPv6 connectivity breaks.
         ip6 nexthdr icmpv6 icmpv6 type { nd-neighbor-solicit,  nd-router-advert, nd-neighbor-advert } accept comment "accept neighbour discovery"
@@ -32,12 +34,18 @@ table inet filter {
         # log prefix "[nftables] Input: " flags all
     }
     chain forward {
-        type filter hook forward priority 0; policy drop;
+        type filter hook forward priority 0; policy {{ salt['pillar.get']('nftables:configuration:tables:inet:filter:forward:policy', "drop") }};
+{% for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter:forward:rules') %}
+        {{ block_name }}
+{%- endfor %}
         # log prefix "[nftables] forward: " flags all
         # counter comment "count packets"
     }
     chain output {
-        type filter hook output priority 0; policy accept;
+        type filter hook output priority 0; policy {{ salt['pillar.get']('nftables:configuration:tables:inet:filter:output:policy', "accept") }};
+{%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter:output:rules') %}
+        {{ block_name }}
+{%- endfor %}
         counter comment "count accepted packets"
     }
 }
