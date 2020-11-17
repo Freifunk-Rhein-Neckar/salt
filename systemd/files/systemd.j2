@@ -1,0 +1,25 @@
+{%- macro profile_block(config) %}
+{%- for sections in config %}
+    {%- for section, settings in sections.items() %}
+[{{ section }}]
+        {%- if settings is iterable -%}
+            {%- for setting in settings if settings is iterable -%}
+                {%- if setting is number or setting is string %}
+{{ setting }}
+                {%- elif setting is mapping -%}
+                    {%- for key, value in setting.items() %}
+                        {%- if value is number or value is string %}
+{{ key }}={{ value }}
+                        {%- elif value is iterable %}
+{{ key }}={{ value|join(" ") }}
+                        {%- endif -%}
+                    {%- endfor -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endfor %}
+{% endfor %}
+{%- endmacro -%}
+
+# This file is managed by Salt
+{{ profile_block(config) }}
