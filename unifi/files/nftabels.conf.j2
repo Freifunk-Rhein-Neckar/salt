@@ -1,0 +1,46 @@
+define allow_ipv6 = {
+    fdc3:67ce:cc7e::/48,
+    2a01:4f8:171:fc00::/56
+}
+
+define allow_ipv4 = {
+    10.142.0.0/16,
+    10.94.0.0/15
+}
+
+table inet filter {
+    chain input {
+        # Local Ingress Ports
+        # udp dport 3478 ip  saddr $allow_ipv4 accept comment "STUN (IPv4)"
+        # udp dport 3478 ip6 saddr $allow_ipv6 accept comment "STUN (IPv6)"
+        udp dport 5514 ip  saddr $allow_ipv4 accept comment "remote syslog capture (IPv4)"
+        udp dport 5514 ip6 saddr $allow_ipv6 accept comment "remote syslog capture (IPv6)"
+        # tcp dport 8080 ip  saddr $allow_ipv4 accept comment "device and controller communication (IPv4)"
+        # tcp dport 8080 ip6 saddr $allow_ipv6 accept comment "device and controller communication (IPv6)"
+        # tcp dport 8443 ip  saddr $allow_ipv4 accept comment "controller GUI/API as seen in a web browser (IPv4)"
+        # tcp dport 8443 ip6 saddr $allow_ipv6 accept comment "controller GUI/API as seen in a web browser (IPv6)"
+        # tcp dport 8880 ip  saddr $allow_ipv4 accept comment "HTTP portal redirection (IPv4)"
+        # tcp dport 8880 ip6 saddr $allow_ipv6 accept comment "HTTP portal redirection (IPv6)"
+        # tcp dport 8843 ip  saddr $allow_ipv4 accept comment "HTTPS portal redirection (IPv4)"
+        # tcp dport 8843 ip6 saddr $allow_ipv6 accept comment "HTTPS portal redirection (IPv6)"
+        # tcp dport 6789 ip  saddr $allow_ipv4 accept comment "UniFi mobile speed test (IPv4)"
+        # tcp dport 6789 ip6 saddr $allow_ipv6 accept comment "UniFi mobile speed test (IPv6)"
+        # tcp dport 27117 ip  saddr $allow_ipv4 accept comment "local-bound database communication (IPv4)"
+        # tcp dport 27117 ip6 saddr $allow_ipv6 accept comment "local-bound database communication (IPv6)"
+        # udp dport { 5656-5699 } ip  saddr $allow_ipv4 accept comment "AP-EDU broadcasting (IPv4)"
+        # udp dport { 5656-5699 } ip6 saddr $allow_ipv6 accept comment "AP-EDU broadcasting (IPv6)"
+        udp dport 10001 ip  saddr $allow_ipv4 accept comment "device discovery (IPv4)"
+        udp dport 10001 ip6 saddr $allow_ipv6 accept comment "device discovery (IPv6)"
+        udp dport 1900 ip  saddr $allow_ipv4 accept comment "Make controller discoverable on L2 network (IPv4)"
+        udp dport 1900 ip6 saddr $allow_ipv6 accept comment "Make controller discoverable on L2 network (IPv6)"
+
+        # Ingress Ports Required for L3 Management Over the Internet
+        udp dport 3478 accept comment "STUN (IPv6)"
+        tcp dport 8080 accept comment "device and controller communication (IPv6)"
+        # tcp dport 8443 accept comment "controller GUI/API as seen in a web browser (IPv6)"
+        # tcp dport 8880 accept comment "HTTP portal redirection (IPv6)"
+        # tcp dport 8843 accept comment "HTTPS portal redirection (IPv6)"
+        tcp dport 6789 accept comment "UniFi mobile speed test (IPv6)"
+
+    }
+}
