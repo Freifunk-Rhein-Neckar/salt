@@ -8,7 +8,10 @@ fdc3:67ce:cc7e::/48,
 2a01:4f8:c17:6b7f::/64
 }
 
-define allow_ipv4 = 10.142.0.0/16
+define allow_ipv4 = {
+10.142.0.0/16,
+10.94.0.0/15
+}
 
 table inet filter {
     chain input {
@@ -16,4 +19,3 @@ table inet filter {
         meta l4proto { tcp, udp } @th,16,16 53 ip  saddr $allow_ipv4 accept comment "accept knot-resolver (IPv4)"
     }
 }
-
