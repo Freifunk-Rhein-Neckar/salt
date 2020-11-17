@@ -13,5 +13,5 @@ DomainType: batadv
 # Batman interface, mandatory
 BatmanInterface: {{ domain }}-bat
 # Other listen interfaces
-Interfaces: {{ domain }}-br, {{ domain }}-vlan{% for fastd_ifname in salt['fastd.ifnames_for_domain'](domain) %}, {{ fastd_ifname }}{% endfor %}
+Interfaces: {{ domain }}-br, {{ domain }}-vxlan{% for fastd_ifname in salt['fastd.ifnames_for_domain'](domain) %}, {{ fastd_ifname }}{% endfor %}
 {% endfor %}
