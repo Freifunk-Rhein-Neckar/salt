@@ -2,6 +2,8 @@
 
 table inet filter {
     chain input {
-        iifname "{{ salt['pillar.get']('nftables:public_interface', 'eth0') }}" udp dport { {{ " ".join(ports) }} } counter accept comment "accept fastd - {{ domain }}"
+        iifname "{{ salt['pillar.get']('nftables:public_interface', 'eth0') }}" udp dport { {{ ", ".join(ports) }} } ip saddr { 94.130.243.232, 138.201.30.247, 94.130.243.233, 94.130.243.233, 138.201.62.58, 138.201.62.59, 138.201.30.244 } counter drop comment "drop fastd - {{ domain }} from FFRN"
+        iifname "{{ salt['pillar.get']('nftables:public_interface', 'eth0') }}" udp dport { {{ ", ".join(ports) }} } ip6 saddr { 2a01:4f8:171:fc00::/56 } counter drop comment "drop fastd - {{ domain }} from FFRN"
+        iifname "{{ salt['pillar.get']('nftables:public_interface', 'eth0') }}" udp dport { {{ ", ".join(ports) }} } counter accept comment "accept fastd - {{ domain }}"
     }
 }
