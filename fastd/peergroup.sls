@@ -1,4 +1,7 @@
 ---
+include:
+  - common.packages.git
+
 /var/lib/fastd/peer_groups:
   file.directory:
     - makedirs: True
