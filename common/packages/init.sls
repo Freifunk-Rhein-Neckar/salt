@@ -42,6 +42,7 @@ packages_base:
       - wget
       - whois
 
-# these installs have dedicted states, so they can be referenced in require statements
-git:
-  pkg.installed
+
+# these installs have dedicted states and files, so they can be referenced in require statements
+include:
+  - .git
