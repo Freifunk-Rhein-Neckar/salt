@@ -2,6 +2,9 @@
 include:
   - .service
 
+{% set mainif_link = salt['pillar.get']('network:main:link') %}
+
+{% if mainif_link != "" %}
 /etc/systemd/network/10-mainif.link:
   file.managed:
     - source: salt://systemd/files/systemd.j2
@@ -11,9 +14,10 @@ include:
     - template: jinja
     - context:
         config:
-          {{ salt['pillar.get']('network:main:link') }}
+          {{ mainif_link }}
     - watch_in:
       - service: systemd-networkd
+{% endif %}
 
 /etc/systemd/network/10-mainif.network:
   file.managed:

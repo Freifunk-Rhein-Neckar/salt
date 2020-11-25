@@ -10,9 +10,6 @@ isc-dhcp-server:
       - file: /etc/dhcp/dhcpd.conf
     - require:
       - file: /etc/systemd/system/isc-dhcp-server.service
-{% for domain in salt['pillar.get']('domains', {}).values() %}
-      - cmd: ifup-dom{{ domain['domain_id'] }}-br
-{% endfor %}
 
 /etc/systemd/system/isc-dhcp-server.service:
   file.managed:

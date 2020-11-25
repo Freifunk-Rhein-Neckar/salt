@@ -2,106 +2,77 @@
 {%- set with_batman_adv = salt['pillar.get']('domains:%s:batman-adv'|format(domain), False) -%}
 {%- set with_fastd = salt['pillar.get']('domains:%s:fastd'|format(domain), False) -%}
 
-# client bridge
-auto dom{{ domain_id }}-br
-iface dom{{ domain_id }}-br inet manual
-	pre-up brctl addbr $IFACE
-	post-down brctl delbr $IFACE
-	pre-up ip link set address {{ salt['net.clientbr_mac'](domain_id, host_id) }} dev $IFACE
-	pre-up ip link set up dev $IFACE
-	{%- if with_batman_adv %}
-	# batman-adv specific hooks
-	{%- endif %}
-{%- if not salt['net.has_ip_addrs'](domain) %}
-iface dom{{ domain_id }}-br inet6 auto
-	# interface is restricted to link-local connectivity
-	accept_ra 0
-{%- else %}
-{%- for network in salt['pillar.get']('domains:%s:ip4'|format(domain), {}).values() if 'address' in network %}
-iface dom{{ domain_id }}-br inet static
-	address {{ network['address'] }}
-	netmask {{ network['netmask'] }}
-{%- endfor %}
-{%- for network in salt['pillar.get']('domains:%s:ip6'|format(domain), {}).values() if 'address' in network %}
-iface dom{{ domain_id }}-br inet6 static
-	address {{ network['address'] }}
-	netmask {{ network['prefixlen'] }}
-	dad-attempts 0
-	accept_ra 0
-{%- endfor %}
-{%- endif %}
-
 {% if with_batman_adv %}
 # batman mesh interface
 allow-hotplug dom{{ domain_id }}-bat
 iface dom{{ domain_id }}-bat inet manual
-	pre-up ip link set address {{ salt['net.batadv_mac'](domain_id, host_id) }} dev $IFACE
-	post-up ip link set master dom{{ domain_id }}-br dev $IFACE
-	pre-down ip link set nomaster dev $IFACE
-	# disable ipv6 autoconfig
-	pre-up echo 0 > /proc/sys/net/ipv6/conf/$IFACE/accept_ra
-	{%- if salt['pillar.get']('domains:%s:batman-adv:features:mm'|format(domain), False) %}
-	# multicast optimizations enabled
-	post-up batctl meshif $IFACE mm 1
-	post-up echo 2 > /sys/class/net/$IFACE/brport/multicast_router
-	{%- else %}
-	# multicast optimizations disabled
-	post-up batctl meshif $IFACE mm 0
-	{%- endif %}
-	{%- if salt['pillar.get']('domains:%s:batman-adv:features:dat'|format(domain), False) %}
-	# distributed arp table enabled
-	post-up batctl meshif $IFACE dat 1
-	{%- else %}
-	# distributed arp table disabled
-	post-up batctl meshif $IFACE dat 0
-	{%- endif %}
-	{%- if salt['pillar.get']('domains:%s:batman-adv:hop_penalty'|format(domain), False) %}
-	# hop penalty
-	post-up batctl meshif $IFACE hp {{ salt['pillar.get']('domains:%s:batman-adv:hop_penalty'|format(domain)) }}
-	{%- else %}
-	# hop penalty remains at default
-	{%- endif %}
-	# originator interval
-	post-up batctl meshif $IFACE orig_interval {{ salt['pillar.get']('domains:%s:batman-adv:orig_interval'|format(domain), 5000) }}
-	{%- if salt['pillar.get']('domains:%s:batman-adv:gw_mode:enabled'|format(domain), False) %}
-	# gateway mode enabled
-	{%- set uplink = salt['pillar.get']('domains:%s:batman-adv:gw_mode:uplink'|format(domain), '100mbit') %}
-	{%- set downlink = salt['pillar.get']('domains:%s:batman-adv:gw_mode:uplink'|format(domain), '100mbit') %}
-	post-up batctl meshif $IFACE gw server {{ uplink }}/{{ downlink }}
-	{%- endif %}
+        pre-up ip link set address {{ salt['net.batadv_mac'](domain_id, host_id) }} dev $IFACE
+        # pre-up ip link add $IFACE type batadv || true
+        # pre-up ip link set up dev $IFACE || true
+        post-up ip link set master dom{{ domain_id }}-br dev $IFACE
+        pre-down ip link set nomaster dev $IFACE
+        # disable ipv6 autoconfig
+        pre-up echo 0 > /proc/sys/net/ipv6/conf/$IFACE/accept_ra
+    {%- if salt['pillar.get']('domains:%s:batman-adv:features:mm'|format(domain), False) %}
+        # multicast optimizations enabled
+        post-up batctl meshif $IFACE mm 1
+        post-up echo 2 > /sys/class/net/$IFACE/brport/multicast_router
+    {%- else %}
+        # multicast optimizations disabled
+        post-up batctl meshif $IFACE mm 0
+    {%- endif %}
+    {%- if salt['pillar.get']('domains:%s:batman-adv:features:dat'|format(domain), False) %}
+        # distributed arp table enabled
+        post-up batctl meshif $IFACE dat 1
+    {%- else %}
+        # distributed arp table disabled
+        post-up batctl meshif $IFACE dat 0
+    {%- endif %}
+    {%- if salt['pillar.get']('domains:%s:batman-adv:hop_penalty'|format(domain), False) %}
+        # hop penalty
+        post-up batctl meshif $IFACE hp {{ salt['pillar.get']('domains:%s:batman-adv:hop_penalty'|format(domain)) }}
+    {%- else %}
+        # hop penalty remains at default
+    {%- endif %}
+        # originator interval
+        post-up batctl meshif $IFACE orig_interval {{ salt['pillar.get']('domains:%s:batman-adv:orig_interval'|format(domain), 5000) }}
+    {%- if salt['pillar.get']('domains:%s:batman-adv:gw_mode:enabled'|format(domain), False) %}
+        # gateway mode enabled
+    {%- set uplink = salt['pillar.get']('domains:%s:batman-adv:gw_mode:uplink'|format(domain), '100mbit') %}
+    {%- set downlink = salt['pillar.get']('domains:%s:batman-adv:gw_mode:uplink'|format(domain), '100mbit') %}
+        post-up batctl meshif $IFACE gw server {{ uplink }}/{{ downlink }}
+    {%- endif %}
+        post-up ip link set master dom{{ domain_id }}-bat dev dom{{ domain_id }}-vxlan
 {% endif %}
 
+{%- if domain_id == -1 %}
 # l2 transport
-{%- if domain_id == 0 %}
 auto eth1
 allow-hotplug eth1
 iface eth1 inet manual
-{%- else %}
-auto dom{{ domain_id }}-vlan
-iface dom{{ domain_id }}-vlan inet manual
+        pre-up ip link set up dev $IFACE
+    {%- if with_batman_adv %}
+        # batman-adv specific hooks
+        pre-up ip link set mtu {{ salt['pillar.get']('domains:%s:mtu'|format(domain), 1312) }} dev $IFACE
+        post-up ip link add dom{{ domain_id }}-bat type batadv || true
+        post-up ip link set up dev dom{{ domain_id }}-bat || true
+        post-up ip link set master dom{{ domain_id }}-bat dev $IFACE
+    {% endif %}
 {%- endif %}
-	pre-up ip link set up dev $IFACE
-	{%- if with_batman_adv %}
-	# batman-adv specific hooks
-	pre-up ip link set mtu {{ salt['pillar.get']('domains:%s:mtu'|format(domain), 1312) }} dev $IFACE
-	post-up ip link add dom{{ domain_id }}-bat type batadv || true
-	post-up ip link set up dev dom{{ domain_id }}-bat || true
-	post-up ip link set master dom{{ domain_id }}-bat dev $IFACE
-	{% endif %}
 
-{%- if 'gateway' in pillar.roles and with_fastd %}
+{%- if "roles" in pillar and 'gateway' in pillar.roles and with_fastd %}
 {%- for instance in salt['pillar.get']('domains:%s:fastd:instances'|format(domain)) %}
 # l2 tunnel (fastd)
 allow-hotplug dom{{ domain_id }}-vpn-{{ instance['mtu'] }}
 iface dom{{ domain_id }}-vpn-{{ instance['mtu'] }} inet manual
-	pre-up ip link set address {{ salt['fastd.mac'](domain_id, host_id) }} dev $IFACE
-	pre-up ip link set up dev $IFACE
-	{%- if with_batman_adv %}
-	# batman-adv specific hooks
-	post-up ip link add dom{{ domain_id }}-bat type batadv || true
-	post-up ip link set up dev dom{{ domain_id }}-bat || true
-	post-up ip link set master dom{{ domain_id }}-bat dev $IFACE
-	{%- endif %}
+        pre-up ip link set address {{ salt['fastd.mac'](domain_id, host_id) }} dev $IFACE
+        pre-up ip link set up dev $IFACE
+    {%- if with_batman_adv %}
+        # batman-adv specific hooks
+        post-up ip link add dom{{ domain_id }}-bat type batadv || true
+        post-up ip link set up dev dom{{ domain_id }}-bat || true
+        post-up ip link set master dom{{ domain_id }}-bat dev $IFACE
+    {%- endif %}
 
 {%- endfor %}
 {%- endif %}

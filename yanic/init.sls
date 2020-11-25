@@ -1,4 +1,5 @@
 ---
+{% import 'nftables/macro.sls' as nftables %}
 {%- set gopath = '/var/lib/yanic/go' %}
 
 include:
@@ -74,6 +75,8 @@ yanic:
     - user: yanic
     - group: yanic
     - dir_mode: '0755'
+
+{{ nftables.include('40-yanic', 'salt://yanic/files/nftabels.conf.j2' ) }}
 
 /etc/systemd/system/yanic.service:
   file.managed:

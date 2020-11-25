@@ -17,22 +17,40 @@ base:
 {% endif %}
 
 # physical Servers
-  'elsenz.ffrn.de,altneckar.ffrn.de,itter.ffrn.de':
-    - match: list
+  'roles:vmhost':
+    - match: pillar
     - telegraf
     - wireguard
+    - kvm
     - telegraf.inputs.smart
+    - systemd.networkd
+    - systemd.networkd.mainif
+    - systemd.networkd.br-vm
 
   'resolver*.ffrn.de':
     - nftables
+    - systemd
+    - systemd.networkd.wg-ffrn
+    - systemd.networkd.br-mesh
+    - systemd.networkd.vxlan
+    - network.domains
     - network.conntrack
     - dehydrated
     - knot-resolver
     - knot-resolver.nftables
+    - batman_adv
 
   'v6upstream.ffrn.de':
+    - nftables
     - knot-resolver
+    - systemd
+    - systemd.networkd.wg-ffrn
+    - systemd.networkd.br-mesh
+    - systemd.networkd.vxlan
+    - network.domains
     - radvd
+    - batman_adv
+    - mesh-announce
 
   'tools*.ffrn.de':
     - telegraf
@@ -61,7 +79,7 @@ base:
     - dehydrated
     - docker.compose
     - wireguard
-  
+
   'tickets.ffrn.de':
     - nftables
     - nginx
@@ -76,9 +94,15 @@ base:
     - docker
 
   'map.ffrn.de':
-    - network.batman-adv
+    - nftables
+    - systemd
+    - systemd.networkd.wg-ffrn
+    - systemd.networkd.br-mesh
+    - systemd.networkd.vxlan
+    - network.domains
     - yanic
     - nginx
+    - nginx.nftables
     - dehydrated
     - meshviewer
 
@@ -90,36 +114,40 @@ base:
     - jitsi-meet
 
   'unifi.ffrn.de':
+    - nftables
     - nginx
     - dehydrated
+    - batman_adv
+    - systemd
+    - systemd.networkd.br-mesh
+    - nginx.nftables
+    - unifi
+    - mesh-announce
 
   'gw*.ffrn.de':
     - nftables
+    - systemd
+    - systemd.networkd.wg-ffrn
+    - systemd.networkd.br-mesh
+    - systemd.networkd.vxlan
     - network.bridge
     - network.sysctl
     - network.conntrack
-    - network.batman-adv
+    - batman_adv
     - network.domains
     - dhcpv4
     - fastd
     - mesh-announce
 
-  'test1.ffrn.de':
+  'test*.ffrn.de':
     - nftables
-    # - network.bridge
-    # - network.sysctl
-    # - network.batman-adv
-    # - network.domains
-    # - dhcpv4
-    # - fastd
-
-    # - yanic
-    # - nginx
-    # - dehydrated
-    # - meshviewer
-
-
-    # - dhcpv4
-    # - nginx
-    # - www.website
-    # - telegraf
+    - systemd
+    - systemd.networkd.wg-ffrn
+    - systemd.networkd.br-mesh
+    - systemd.networkd.vxlan
+    - batman_adv
+    - network.bridge
+    - network.sysctl
+    - network.conntrack
+    - network.domains
+    - mesh-announce
