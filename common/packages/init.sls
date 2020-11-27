@@ -10,7 +10,6 @@ packages_base:
       - ethtool
       - fd-find
       - htop
-      - iperf3
       - iputils-arping
       - iputils-tracepath
       - lsb-release

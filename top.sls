@@ -12,6 +12,7 @@ base:
     - telegraf
     - openssh
     - mosh
+    - iperf3
 {% if grains['virtual'] != 'LXC' %}
     - chrony
 {% endif %}
