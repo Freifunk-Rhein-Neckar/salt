@@ -35,7 +35,7 @@ table inet mangle {
 
 {%- if "roles" in pillar and 'gateway6' in pillar.roles %}
         # mss = transport mtu - (batman-adv + ether) - ipv6 - tcp
-        ip version 6 iifname "dom{{ domain_id }}-br" oifname "{{ public_interface) }}" meta l4proto tcp tcp flags & (syn|rst) == syn counter tcp option maxseg size set {{ mtu - 32 - 40 - 20 }}
+        ip version 6 iifname "dom{{ domain_id }}-br" oifname "{{ public_interface }}" meta l4proto tcp tcp flags & (syn|rst) == syn counter tcp option maxseg size set {{ mtu - 32 - 40 - 20 }}
         ip version 6 iifname "{{ public_interface }}" oifname "dom{{ domain_id }}-br" meta l4proto tcp tcp flags & (syn|rst) == syn counter tcp option maxseg size set {{ mtu - 32 - 40 - 20 }}
 {%- endif %}
     }

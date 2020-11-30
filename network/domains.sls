@@ -64,7 +64,7 @@ include:
 
 dom{{ domain_id }}-network-up-cron:
   cron:
-    {%- if not ("roles" in pillar and 'gateway' in pillar.roles and with_fastd) %}
+    {%- if not ("roles" in pillar and 'gateway4' in pillar.roles and with_fastd) %}
     - present
     {%- else %}
     - absent
