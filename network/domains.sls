@@ -1,6 +1,12 @@
 ---
 include:
   - nftables
+{% if 'gateway4' in salt['pillar.get']('roles', []) %}
+  - nftables.tables.nat4
+{% endif %}
+{% if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
+  - nftables.tables.mangle
+{% endif %}
   - network
 
 {%- set host_id = salt['pillar.get']('host:id:primary') -%}
@@ -11,12 +17,7 @@ include:
   {% set with_batman_adv = salt['pillar.get']('domains:%s:batman-adv'|format(domain), False) %}
 
 /etc/network/interfaces.d/dom{{ domain_id }}.cfg:
-  file:
-  {%- if domain_id|int in [0,1,2] %}
-    - managed
-  {%- else %}
-    - absent
-  {%- endif %}
+  file.managed:
     - source: salt://network/files/interfaces-domain.j2
     - mode: '0644'
     - user: root
@@ -34,7 +35,7 @@ include:
     - name:
     - contents: "{{ domain_id+2 }}    dom{{ domain_id }}-int"
 
-  {% if 'gateway' in salt['pillar.get']('roles', []) %}
+  {% if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
 /etc/nftables.d/20-dom{{ domain_id }}.conf:
   file.managed:
     - source: salt://network/files/nftables-gw-domain.conf.j2

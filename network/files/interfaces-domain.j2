@@ -60,7 +60,7 @@ iface eth1 inet manual
     {% endif %}
 {%- endif %}
 
-{%- if "roles" in pillar and 'gateway' in pillar.roles and with_fastd %}
+{%- if "roles" in pillar and 'gateway4' in pillar.roles and with_fastd %}
 {%- for instance in salt['pillar.get']('domains:%s:fastd:instances'|format(domain)) %}
 # l2 tunnel (fastd)
 allow-hotplug dom{{ domain_id }}-vpn-{{ instance['mtu'] }}

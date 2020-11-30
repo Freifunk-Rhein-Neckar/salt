@@ -1,0 +1,21 @@
+table inet mangle {
+    chain PREROUTING {
+        type filter hook prerouting priority -150; policy accept;
+    }
+
+    chain INPUT {
+        type filter hook input priority -150; policy accept;
+    }
+
+    chain FORWARD {
+        type filter hook forward priority -150; policy accept;
+    }
+
+    chain OUTPUT {
+        type route hook output priority -150; policy accept;
+    }
+
+    chain POSTROUTING {
+        type filter hook postrouting priority -150; policy accept;
+    }
+}

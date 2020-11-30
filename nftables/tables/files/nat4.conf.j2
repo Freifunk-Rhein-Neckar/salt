@@ -1,0 +1,17 @@
+table ip nat {
+    chain PREROUTING {
+        type nat hook prerouting priority -100; policy accept;
+    }
+
+    chain INPUT {
+        type nat hook input priority 100; policy accept;
+    }
+
+    chain POSTROUTING {
+        type nat hook postrouting priority 100; policy accept;
+    }
+
+    chain OUTPUT {
+        type nat hook output priority -100; policy accept;
+    }
+}
