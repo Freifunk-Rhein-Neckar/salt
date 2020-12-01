@@ -15,13 +15,13 @@ mesh-announce:
       - file: /etc/mesh-announce/mesh-announce.conf
       - file: /etc/systemd/system/mesh-announce.service
 
-https://git.darmstadt.ccc.de/ffda/infra/mesh-announce.git:
+https://github.com/Freifunk-Rhein-Neckar/mesh-announce.git:
   git.latest:
     - target: /opt/mesh-announce
     - force_fetch: true
     - force_reset: true
-    - refspec_branch: sudo
-    - rev: sudo
+    - refspec_branch: ffrn_dev
+    - rev: ffrn_dev
     - watch_in:
       - service: mesh-announce
 

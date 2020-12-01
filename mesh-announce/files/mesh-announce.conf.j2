@@ -1,3 +1,8 @@
+{%- set hardware_model = salt['pillar.get']('nodeinfo:hardware:model', '') %}
+{%- set contact = salt['pillar.get']('nodeinfo:owner:contact', '') %}
+{%- set latitude = salt['pillar.get']('nodeinfo:location:latitude', '') %}
+{%- set longitude = salt['pillar.get']('nodeinfo:location:longitude', '') %}
+
 # Default settings
 [Defaults]
 # Listen port, defaults to 1001
@@ -7,9 +12,28 @@ MulticastLinkAddress: ff02::2:1001
 MulticastSiteAddress: ff05::2:1001
 # Default domain type
 DomainType: batadv
+{%- if hardware_model != "" %}
+Hardware-Model: {{ hardware_model }}
+{%- endif %}
+{%- if contact != "" %}
+Contact: {{ contact }}
+{%- endif %}
+{%- if latitude != "" %}
+Latitude: {{ latitude }}
+{%- endif %}
+{%- if longitude != "" %}
+Longitude: {{ longitude }}
+{%- endif %}
+VPN: {% if not ("roles" in pillar and ('gateway4' in pillar.roles or 'gateway6' in pillar.roles)) %}False{% else %}True{% endif %}
 
 {% for domain in salt['pillar.get']('domains').keys() %}
-[{% if domain == "dom0" %}ffrn{% else %}{{ domain }}{% endif %}]
+{%- if domain == "dom0" %}
+[ffrn]
+Hostname: {{ salt['grains.get']('fqdn', '') }}
+{%- else %}
+[{{ domain }}]
+Hostname: {{ domain }}.{{ salt['grains.get']('fqdn', '') }}
+{%- endif %}
 # Batman interface, mandatory
 BatmanInterface: {{ domain }}-bat
 # Other listen interfaces
