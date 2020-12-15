@@ -1,0 +1,17 @@
+#!/bin/sh
+
+cd /var/www/website
+
+HEAD_PRE=$(git rev-parse HEAD)
+
+git fetch
+git reset --hard origin/gh-pages --
+
+HEAD_POST=$(git rev-parse HEAD)
+
+if [ "$HEAD_PRE" != "$HEAD_POST" ]; then
+	echo "Date: "$(date +"%Y-%m-%d %T") > info.txt
+	echo "Commit: "$HEAD_POST >> info.txt
+fi
+
+exit 0
