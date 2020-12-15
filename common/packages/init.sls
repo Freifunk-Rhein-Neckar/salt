@@ -4,7 +4,6 @@ packages_base:
     - pkgs:
       - bash-completion
       - ca-certificates
-      - curl
       - debian-goodies
       - dnsutils
       - ethtool
@@ -25,7 +24,6 @@ packages_base:
 {% if grains['oscodename'] == "buster" %}
       - ripgrep
 {% endif %}
-      - rsync
       - screen
 {%- if salt['hardware.is_physical']() %}
       - smartmontools
@@ -40,8 +38,13 @@ packages_base:
       - vim
       - wget
       - whois
+      - zip
 
 
 # these installs have dedicted states and files, so they can be referenced in require statements
 include:
+  - .curl
   - .git
+  - .jq
+  - .rsync
+  - .unzip
