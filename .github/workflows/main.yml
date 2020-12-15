@@ -1,0 +1,30 @@
+name: test
+
+on: [push]
+
+jobs:
+  editorconfig:
+    # runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+
+    name: editorconfig check
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: editorconfig-checker/action-editorconfig-checker@v1
+
+  salt-lint:
+    runs-on: ubuntu-18.04
+
+    name: Salt Lint Action
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run salt-lint
+        uses: roaldnefs/salt-lint-action@master
+        env:
+          ACTION_STATE_NAME: init.sls
