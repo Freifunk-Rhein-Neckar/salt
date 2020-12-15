@@ -1,4 +1,7 @@
 ---
+include:
+  - nftables
+
 {% import 'nftables/macro.sls' as nftables %}
 
 {{ nftables.include('50-mesh-announce', 'salt://mesh-announce/files/nftables.conf.j2' ) }}
