@@ -36,26 +36,28 @@ include:
             - Address: "{{ salt['pillar.get']('network:br-vm:network:publicv6:range') }}{{ salt['pillar.get']('network:br-vm:network:publicv6:bridge-ip', ':3') }}/{{ salt['pillar.get']('network:br-vm:network:publicv6:mask', '64') }}"
             - Address: "{{ salt['pillar.get']('network:br-vm:network:privatev6:range') }}{{ salt['pillar.get']('network:br-vm:network:privatev6:bridge-ip', ':1') }}/{{ salt['pillar.get']('network:br-vm:network:privatev6:mask', '64') }}"
             - Address: "fe80::1/64"
-{%- for ip in salt['pillar.get']('network:br-vm:additional-ips') %}
+{%- for family in [6,4] %}
+  {%- for ip in salt['pillar.get']('network:br-vm:additional_ipv' + family|string, []) %}
           - Route:
-  {%- if grains['systemd']['version']|int < 242 %}
+    {%- if grains['systemd']['version']|int < 242 %}
             #- "#GatewayOnlink": "true"
-  {%- else %}
+    {%- else %}
             #- GatewayOnLink: "true"
-  {%- endif %}
-  {%- if ip is mapping %}
-    {% for key, value in ip.items() %}
+    {%- endif %}
+    {%- if ip is mapping %}
+      {% for key, value in ip.items() %}
             - Destination: "{{ key }}"
-      {% for key2 in value %}
-        {%- for key3, value3 in key2.items() %}
+        {% for key2 in value %}
+          {%- for key3, value3 in key2.items() %}
             - "{{ key3 }}": "{{ value3 }}"
+          {%- endfor %}
         {%- endfor %}
       {%- endfor %}
-    {%- endfor %}
-  {%- else %}
+    {%- else %}
             - Destination: "{{ ip }}"
-  {%- endif %}
+    {%- endif %}
             - Scope: "link"
+  {% endfor %}
 {% endfor %}
     - watch_in:
       - service: systemd-networkd
