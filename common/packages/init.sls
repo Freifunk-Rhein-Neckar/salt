@@ -7,7 +7,6 @@ packages_base:
       - debian-goodies
       - dnsutils
       - ethtool
-      - fd-find
       - htop
       - iputils-arping
       - iputils-tracepath
@@ -44,6 +43,7 @@ packages_base:
 # these installs have dedicted states and files, so they can be referenced in require statements
 include:
   - .curl
+  - .fd-find
   - .git
   - .jq
   - .rsync
