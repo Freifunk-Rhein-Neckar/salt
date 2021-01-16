@@ -1,6 +1,11 @@
+---
 # dhcp4
 #
 # Manage installation of isc-dhcp-server
+
+include:
+  - .exporter
+  - nftables
 
 isc-dhcp-server:
   pkg.installed: []
