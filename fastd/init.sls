@@ -35,5 +35,6 @@ fastd_disable_generic_autostart:
       - pkg: fastd
 
 include:
-  - fastd.peergroup
-  - fastd.instances
+  - .peergroup
+  - .instances
+  - .exporter
