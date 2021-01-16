@@ -1,21 +1,25 @@
 ---
 base:
   '*':
-    - apt
-    - common.resolv
-    - common.packages
-    - common.kernel
-    - common.datetime
-    - common.systemd
     - salt.minion
-    - network
-    - telegraf
-    - openssh
-    - mosh
+    - common.packages
     - iperf3
+    - mosh
+    - openssh.authorized_keys
 {% if grains['virtual'] != 'LXC' %}
     - chrony
 {% endif %}
+
+  'os:Debian':
+    - match: grain
+    - apt
+    - common.resolv
+    - common.kernel
+    - common.datetime
+    - common.systemd
+    - network
+    - telegraf
+    - openssh
 
 # physical Servers
   'roles:vmhost':
@@ -23,7 +27,6 @@ base:
     - telegraf
     - wireguard
     - kvm
-    - telegraf.inputs.smart
     - systemd.networkd
     - systemd.networkd.mainif
     - systemd.networkd.br-vm
@@ -80,6 +83,7 @@ base:
     - dehydrated
     - docker.compose
     - wireguard
+    - common.packages.apache2-utils
 
   'tickets.ffrn.de':
     - nftables
