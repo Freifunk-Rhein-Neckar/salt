@@ -1,0 +1,12 @@
+# Managed by SaltStack - do not edit
+{% set default_keys = salt['pillar.get']('ssh:root:authorized_keys-default') %}
+{%- for block_name in default_keys %}
+{{ block_name }}
+{%- endfor %}
+{%- set authorized_keys = salt['pillar.get']('ssh:root:authorized_keys') %}
+{% if authorized_keys|length %}
+# Host specific Keys:
+{%- for block_name in authorized_keys %}
+{{ block_name }}
+{%- endfor %}
+{%- endif %}
