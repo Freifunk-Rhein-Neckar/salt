@@ -5,6 +5,7 @@ base:
     - common.packages
     - iperf3
     - mosh
+    - prometheus.exporter
     - openssh.authorized_keys
 {% if grains['virtual'] != 'LXC' %}
     - chrony

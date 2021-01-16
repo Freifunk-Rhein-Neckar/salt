@@ -1,0 +1,9 @@
+
+table inet filter {
+    chain input {
+
+        ip6 saddr { {{ salt['pillar.get']('prometheus:allowed_ips:ipv6') | join(", ") }} } tcp dport 9267 accept comment "dhcpv4 exporter"
+        ip saddr { {{ salt['pillar.get']('prometheus:allowed_ips:ipv4') | join(", ") }} } tcp dport 9267 accept comment "dhcpv4 exporter"
+
+    }
+}
