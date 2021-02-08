@@ -17,7 +17,7 @@ fastd:
     - mode: 755
 
 chmod 777 /run/fastd-dom0-vpn-1312.sock:
-  cron.present:
+  cron.absent:
     - identifier: set rights for fastd.sock
     - user: root
     - commented: False
