@@ -77,7 +77,7 @@ dom{{ domain_id }}-network-up-cron:
   {% endif %}
 {% endfor %}
 
-{% if 'gateway' in salt['pillar.get']('roles', []) %}
+{% if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
 /etc/nftables.d/10-network.conf:
   file.managed:
     - source: salt://network/files/nftables-gw.conf.j2
