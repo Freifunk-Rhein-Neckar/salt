@@ -1,0 +1,8 @@
+
+table inet filter {
+    chain input {
+
+        udp dport 60000-61000 accept comment "accept mosh"
+
+    }
+}
