@@ -7,6 +7,7 @@ base:
     - mosh
     - prometheus.exporter
     - openssh.authorized_keys
+    - systemd.networkd.wg-ffrn-in
 {% if grains['virtual'] != 'LXC' %}
     - chrony
 {% endif %}
@@ -19,8 +20,10 @@ base:
     - common.datetime
     - common.systemd
     - network
-    - telegraf
+#    - telegraf
     - openssh
+    - borg
+    - borg.borgmatic
 
 # physical Servers
   'roles:vmhost':
@@ -32,30 +35,27 @@ base:
     - systemd.networkd.mainif
     - systemd.networkd.br-vm
 
-  'resolver*.ffrn.de':
+  'roles:mesh_batman':
+    - match: pillar
     - nftables
-    - systemd
+    - systemd.backports
     - systemd.networkd.wg-ffrn
     - systemd.networkd.br-mesh
     - systemd.networkd.vxlan
     - network.domains
+    - batman_adv
+    - mesh-announce
+
+  'resolver*.ffrn.de':
+    - nftables
     - network.conntrack
     - dehydrated
     - knot-resolver
     - knot-resolver.nftables
-    - batman_adv
 
   'v6upstream.ffrn.de':
-    - nftables
     - knot-resolver
-    - systemd
-    - systemd.networkd.wg-ffrn
-    - systemd.networkd.br-mesh
-    - systemd.networkd.vxlan
-    - network.domains
     - radvd
-    - batman_adv
-    - mesh-announce
 
   'tools*.ffrn.de':
     - telegraf
@@ -99,13 +99,12 @@ base:
     - dehydrated
     - docker
 
+  'master.ffrn.de':
+    - salt.master
+    - dehydrated
+    - systemd.networkd.wg-ffrn-in
+
   'map.ffrn.de':
-    - nftables
-    - systemd
-    - systemd.networkd.wg-ffrn
-    - systemd.networkd.br-mesh
-    - systemd.networkd.vxlan
-    - network.domains
     - yanic
     - nginx
     - nginx.nftables
@@ -118,36 +117,28 @@ base:
     - nginx
     - dehydrated
     - jitsi-meet
+    - telegraf
 
   'unifi.ffrn.de':
     - nftables
     - nginx
     - dehydrated
-    - batman_adv
-    - systemd
-    - systemd.networkd.br-mesh
     - nginx.nftables
     - unifi
     - mesh-announce
 
   'gw*.ffrn.de':
     - nftables
-    - systemd
-    - systemd.networkd.wg-ffrn
-    - systemd.networkd.br-mesh
-    - systemd.networkd.vxlan
     - network.bridge
     - network.sysctl
     - network.conntrack
-    - batman_adv
-    - network.domains
     - dhcpv4
     - fastd
     - mesh-announce
 
   'test*.ffrn.de':
     - nftables
-    - systemd
+    - systemd.backports
     - systemd.networkd.wg-ffrn
     - systemd.networkd.br-mesh
     - systemd.networkd.vxlan
