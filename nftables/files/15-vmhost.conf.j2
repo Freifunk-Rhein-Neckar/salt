@@ -1,0 +1,32 @@
+{%- set public_interface = salt['pillar.get']('nftables:public_interface', 'eth0') %}
+{%- set addr_vm_public_v4 = ', '.join(salt['pillar.get']('network:br-vm:additional_ipv4', [])) %}
+{%- set addr_vm_public_v6 = salt['pillar.get']('network:br-vm:network:publicv6:range')+":/"+salt['pillar.get']('network:br-vm:network:publicv6:mask', '64') %}
+{%- set br_vm_private_v4 = salt['pillar.get']('network:br-vm:network:privatev4:range')+"0/"+salt['pillar.get']('network:br-vm:network:privatev4:mask', '24') %}
+
+table inet filter {
+    chain forward {
+        iifname "br-vm" oifname "br-vm" counter accept
+
+        ip saddr { {{ addr_vm_public_v4 }} } iifname "br-vm" oifname "{{ public_interface }}" counter accept
+        ip daddr { {{ addr_vm_public_v4 }} } iifname "{{ public_interface }}" oifname "br-vm" counter accept
+
+        ip6 saddr { {{ addr_vm_public_v6 }} } iifname "br-vm" oifname "{{ public_interface }}" counter accept
+        ip6 daddr { {{ addr_vm_public_v6 }} } iifname "{{ public_interface }}" oifname "br-vm" counter accept
+
+{%- for ip in salt['pillar.get']('network:br-vm:additional_ipv6', []) %}
+    {%- if ip is mapping %}
+        {%- for key, value in ip.items() %}
+        ip6 saddr {{ key }} iifname "br-vm" oifname "{{ public_interface }}" counter accept
+        ip6 daddr {{ key }} iifname "{{ public_interface }}" oifname "br-vm" counter accept
+        {%- endfor %}
+    {%- else %}
+        ip6 saddr {{ ip }} iifname "br-vm" oifname "{{ public_interface }}" counter accept
+        ip6 daddr {{ ip }} iifname "{{ public_interface }}" oifname "br-vm" counter accept
+    {%- endif %}
+{%- endfor %}
+
+        ip saddr {{ br_vm_private_v4 }} iifname "br-vm" oifname "{{ public_interface }}" counter accept
+        ip daddr {{ br_vm_private_v4 }} iifname "{{ public_interface }}" oifname "br-vm" counter accept
+
+    }
+}

@@ -12,4 +12,3 @@
     - require:
       - file: /etc/nftables.d
 {% endmacro %}
-

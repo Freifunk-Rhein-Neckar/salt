@@ -2,9 +2,10 @@
 
 table inet filter {
     chain forward {
+{%- if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
         ct state related,established counter accept comment "accept related and established"
-
-{% if 'gateway4' in salt['pillar.get']('roles', []) %}
+{%- endif %}
+{% if 'gateway4' in salt['pillar.get']('roles', []) or 'vmhost' in salt['pillar.get']('roles', []) %}
         oifname "{{ public_interface }}" ip daddr 0.0.0.0/8 counter drop comment "RFC 1122 'this' network"
         oifname "{{ public_interface }}" ip daddr 10.0.0.0/8 counter drop comment "RFC 1918 private space"
         oifname "{{ public_interface }}" ip daddr 100.64.0.0/10 counter drop comment "RFC 6598 Carrier grade nat space"
@@ -26,9 +27,14 @@ table inet filter {
 {% else %}
         ip version 4 reject with icmp type admin-prohibited comment "no IPv4 forward on normal GWs"
 {% endif %}
-{% if 'gateway6' not in salt['pillar.get']('roles', []) %}
+{% if 'gateway6' in salt['pillar.get']('roles', []) or 'vmhost' in salt['pillar.get']('roles', []) %}
+        oifname "{{ public_interface }}" ip6 saddr fc00::/7 counter drop comment "RFC 4193 Unique Local Unicast"
+        oifname "{{ public_interface }}" ip6 daddr fc00::/7 counter drop comment "RFC 4193 Unique Local Unicast"
+{% else %}
         ip6 version 6 reject with icmpv6 type admin-prohibited comment "no IPv6 forward on normal GWs"
 {% endif %}
+{%- if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
         ether saddr {{ salt['pillar.get']('abuseschleuder') }} counter drop comment "Abuseschleuder"
+{% endif %}
     }
 }

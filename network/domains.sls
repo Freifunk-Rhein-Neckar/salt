@@ -76,17 +76,3 @@ dom{{ domain_id }}-network-up-cron:
     - comment: "set dom{{ domain_id }}-bat up"
   {% endif %}
 {% endfor %}
-
-{% if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
-/etc/nftables.d/10-network.conf:
-  file.managed:
-    - source: salt://network/files/nftables-gw.conf.j2
-    - user: root
-    - group: root
-    - mode: '0644'
-    - template: jinja
-    - watch_in:
-      - service: nftables
-    - require:
-      - file: /etc/nftables.d
-{% endif %}

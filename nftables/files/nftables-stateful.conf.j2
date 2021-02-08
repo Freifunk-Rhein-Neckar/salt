@@ -3,6 +3,9 @@
 flush ruleset
 
 {%- set public_interface = salt['pillar.get']('nftables:public_interface', 'eth0') %}
+{%- set host_inet_filter_input = salt['pillar.get']('nftables:configuration:tables:inet:filter:input:rules') %}
+{%- set host_inet_filter_output = salt['pillar.get']('nftables:configuration:tables:inet:filter:output:rules') %}
+{%- set host_inet_filter_forward = salt['pillar.get']('nftables:configuration:tables:inet:filter:forward:rules') %}
 
 table inet filter {
     chain input {
@@ -19,10 +22,13 @@ table inet filter {
         ip protocol icmp counter accept comment "accept all ICMP types"
         ip6 nexthdr icmpv6 counter accept comment "accept all ICMP types"
 
-        # host specific rules
-{%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter:input') %}
+{% if host_inet_filter_input|length %}
+        # host specific rules - START
+    {%- for block_name in host_inet_filter_input %}
         {{ block_name }}
-{%- endfor %}
+    {%- endfor %}
+        # host specific rules - END
+{%- endif %}
 
         tcp dport ssh ct state new accept comment "accept ssh"
 
@@ -35,19 +41,33 @@ table inet filter {
     }
     chain forward {
         type filter hook forward priority 0; policy {{ salt['pillar.get']('nftables:configuration:tables:inet:filter:forward:policy', "drop") }};
-{% for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter:forward:rules') %}
+
+{% if host_inet_filter_forward|length %}
+        # host specific rules - START
+    {%- for block_name in host_inet_filter_forward %}
         {{ block_name }}
-{%- endfor %}
+    {%- endfor %}
+        # host specific rules - END
+{%- endif %}
+
         # log prefix "[nftables] forward: " flags all
         # counter comment "count packets"
     }
     chain output {
         type filter hook output priority 0; policy {{ salt['pillar.get']('nftables:configuration:tables:inet:filter:output:policy', "accept") }};
-{%- for block_name in salt['pillar.get']('nftables:configuration:tables:inet:filter:output:rules') %}
+
+{% if host_inet_filter_output|length %}
+        # host specific rules - START
+    {%- for block_name in host_inet_filter_output %}
         {{ block_name }}
-{%- endfor %}
+    {%- endfor %}
+        # host specific rules - END
+{%- endif %}
+
         counter comment "count accepted packets"
     }
 }
 
-include "/etc/nftables.d/*.conf";
+{% for i in range(0, 10) %}
+include "/etc/nftables.d/{{ i }}*.conf";
+{%- endfor %}
