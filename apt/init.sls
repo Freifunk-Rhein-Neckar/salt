@@ -2,6 +2,10 @@
 
 {% set oscodename = grains['oscodename'] %}
 
+{% if grains['oscodename'] == "buster" %}
+include:
+  - .buster.bullseye
+
 /etc/apt/sources.list:
   file.managed:
     - contents: |
@@ -26,6 +30,8 @@
         deb http://security.debian.org/debian-security {{ oscodename }}/updates main
         deb-src http://security.debian.org/debian-security {{ oscodename }}/updates main
 {%- endif %}
+
+{% endif %}
 
 apt-transport-https:
   pkg.installed:
