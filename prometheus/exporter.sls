@@ -1,5 +1,4 @@
 ---
-{% import 'nftables/macro.sls' as nftables %}
 {% if salt['pillar.get']('nftables:enabled', True) %}
 include:
   - nftables
