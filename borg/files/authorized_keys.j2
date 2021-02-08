@@ -1,0 +1,8 @@
+{%- set keys = salt.saltutil.runner('mine.get',
+    tgt='*',
+    fun='id_ed25519_borgbackup.pub',
+    tgt_type='glob') -%}
+
+{%- for server, ttt in keys.items() %}
+command="borg serve --append-only --restrict-to-path /home/ffrn/borg/{{ server }}/",restrict {{ ttt['root']['id_ed25519_borgbackup.pub'] }}
+{%- endfor %}
