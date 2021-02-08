@@ -24,7 +24,7 @@ include:
             - PrivateKey: "{{ salt['pillar.get']('wg:wg-ffrn:PrivateKey') }}"
       {% for sections in salt['pillar.get']('wg:wg-ffrn:peers') %}
         {%- for section, settings in sections.items() %}
-          {%- if section != salt['grains.get']('fqdn') ~ ":" ~ wg_port %}
+          {%- if section != salt['grains.get']('id') ~ ":" ~ wg_port %}
           - WireGuardPeer:
             - Endpoint: {{ section }}
             {%- for setting in settings -%}

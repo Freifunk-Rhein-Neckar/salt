@@ -1,0 +1,7 @@
+{%- set wg_port = salt['pillar.get']('wg:wg-ffrn-in:port') %}
+
+table inet filter {
+    chain input {
+        udp dport {{ wg_port }} ct state new accept comment "accept wg-ffrn-in"
+    }
+}
