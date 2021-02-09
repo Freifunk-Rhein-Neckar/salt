@@ -28,9 +28,9 @@ base:
 # physical Servers
   'roles:vmhost':
     - match: pillar
-    - telegraf
     - wireguard
     - kvm
+    - network.hardware-offloading
     - systemd.networkd
     - systemd.networkd.mainif
     - systemd.networkd.br-vm
