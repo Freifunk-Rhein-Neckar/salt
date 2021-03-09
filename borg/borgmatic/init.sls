@@ -39,7 +39,7 @@ borgmatic init --encryption repokey:
     - template: jinja
     - user: root
     - group: root
-    - mode: '0600'
+    - mode: '0644'
     - makedirs: True
     - watch_in:
       - service: borgmatic
@@ -50,7 +50,7 @@ borgmatic init --encryption repokey:
   file.managed:
     - source: salt://systemd/files/systemd.j2
     - user: root
-    - mode: '0600'
+    - mode: '0644'
     - template: jinja
     - context:
         config:

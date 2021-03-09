@@ -6,7 +6,7 @@ include:
   file.managed:
     - source: salt://systemd/files/systemd.j2
     - user: root
-    - mode: '0600'
+    - mode: '0644'
     - template: jinja
     - context:
         config:
