@@ -15,12 +15,16 @@ table inet filter {
     chain forward {
 {%- if "roles" in pillar and 'gateway4' in pillar.roles %}
         iifname "dom{{ domain_id }}-br" ip saddr { {{ ', '.join(nets4) }} } tcp dport 25 counter reject comment "don't allow smtp - {{ domain }}"
-        iifname "dom{{ domain_id }}-br" ip saddr { {{ ', '.join(nets4) }} } counter accept
+        iifname "dom{{ domain_id }}-br" ip saddr { {{ ', '.join(nets4) }} } oifname "{{ public_interface }}" counter accept comment "allow out {{ domain }}"
+        iifname "dom{{ domain_id }}-br" ip saddr { {{ ', '.join(nets4) }} } oifname "dom*" counter accept comment "allow out {{ domain }}"
 {% endif %}
 {%- if "roles" in pillar and 'gateway6' in pillar.roles %}
         iifname "dom{{ domain_id }}-br" ip6 saddr { {{ ', '.join(nets6) }} } tcp dport smtp counter reject comment "don't allow smtp - {{ domain }}"
-        iifname "dom{{ domain_id }}-br" ip6 saddr { {{ ', '.join(nets6) }} } counter accept comment "allow out {{ domain }}"
+        iifname "dom{{ domain_id }}-br" ip6 saddr { {{ ', '.join(nets6) }} } oifname "{{ public_interface }}" counter accept comment "allow out {{ domain }}"
+        iifname "dom{{ domain_id }}-br" ip6 saddr { {{ ', '.join(nets6) }} } oifname "dom*" counter accept comment "allow out {{ domain }}"
         iifname "{{ public_interface }}" oifname "dom{{ domain_id }}-br" ip6 daddr { {{ ', '.join(nets6) }} } counter accept comment "allow in {{ domain }}"
+        iifname "dom{{ domain_id }}-br" oifname { "wg-ffrn-in" } ip6 daddr 64:ff9b::/96 counter accept comment "nat64 - {{ domain }}"
+        oifname "dom{{ domain_id }}-br" iifname { "wg-ffrn-in" } ip6 saddr 64:ff9b::/96 counter accept comment "nat64 - {{ domain }}"
 {%- endif %}
     }
 }
