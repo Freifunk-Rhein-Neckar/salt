@@ -15,7 +15,7 @@ bind [{{ host }}]:{{ port }};
 
 mtu {{ mtu }};
 
-secret "{{ salt['pillar.get']('fastd:secret') }}";
+secret "{{ salt['pillar.get']('fastd:key:secret') }}";
 {% for method in salt['pillar.get']('fastd:ciphers', ['null', 'salsa2012+umac']) %}
 method "{{ method }}";
 {%- endfor %}
