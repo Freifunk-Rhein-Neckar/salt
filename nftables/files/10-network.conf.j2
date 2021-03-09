@@ -33,8 +33,5 @@ table inet filter {
 {% else %}
         ip6 version 6 reject with icmpv6 type admin-prohibited comment "no IPv6 forward on normal GWs"
 {% endif %}
-{%- if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) %}
-        ether saddr {{ salt['pillar.get']('abuseschleuder') }} counter drop comment "Abuseschleuder"
-{% endif %}
     }
 }

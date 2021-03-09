@@ -14,6 +14,18 @@
       - pkg: nftables
 
 {% if 'gateway4' in salt['pillar.get']('roles', []) or 'gateway6' in salt['pillar.get']('roles', []) or 'vmhost' in salt['pillar.get']('roles', []) %}
+/etc/nftables.d/09-network.conf:
+  file.managed:
+    - source: salt://nftables/files/09-network.conf.j2
+    - user: root
+    - group: root
+    - mode: '0644'
+    - template: jinja
+    - watch_in:
+      - service: nftables
+    - require:
+      - file: /etc/nftables.d
+
 /etc/nftables.d/10-network.conf:
   file.managed:
     - source: salt://nftables/files/10-network.conf.j2
