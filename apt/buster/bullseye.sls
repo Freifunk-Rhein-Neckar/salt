@@ -6,8 +6,8 @@
         deb http://deb.debian.org/debian/ bullseye main
         deb-src http://deb.debian.org/debian/ bullseye main
 
-        #deb http://security.debian.org/debian-security bullseye-security main
-        #deb-src http://security.debian.org/debian-security bullseye-security main
+        # deb http://security.debian.org/debian-security bullseye-security main
+        # deb-src http://security.debian.org/debian-security bullseye-security main
 
 /etc/apt/preferences.d/bullseye:
   file.managed:
