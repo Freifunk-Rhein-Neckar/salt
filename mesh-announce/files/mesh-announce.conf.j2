@@ -24,6 +24,12 @@ Latitude: {{ latitude }}
 {%- if longitude != "" %}
 Longitude: {{ longitude }}
 {%- endif %}
+{%- if not ("roles" in pillar and ('gateway4' in pillar.roles or 'gateway6' in pillar.roles)) %}
+VPNProtocols: None
+{%- else %}
+FastdPublicKey: {{ salt['pillar.get']('fastd:key:secret') }}
+VPNProtocols: fastd
+{%- endif %}
 VPN: {% if not ("roles" in pillar and ('gateway4' in pillar.roles or 'gateway6' in pillar.roles)) %}False{% else %}True{% endif %}
 
 {% for domain in salt['pillar.get']('domains').keys() %}

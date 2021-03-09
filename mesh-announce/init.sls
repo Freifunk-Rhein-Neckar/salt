@@ -23,8 +23,8 @@ https://github.com/Freifunk-Rhein-Neckar/mesh-announce.git:
     - target: /opt/mesh-announce
     - force_fetch: true
     - force_reset: true
-    - refspec_branch: ffrn_dev
-    - rev: ffrn_dev
+    - refspec_branch: main
+    - rev: main
     - watch_in:
       - service: mesh-announce
 
@@ -59,3 +59,4 @@ mesh-announce_deps:
       - ethtool
       - lsb-release
       - python3-netifaces
+      - python3-psutil
