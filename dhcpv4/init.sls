@@ -41,6 +41,11 @@ isc-dhcp-server:
     - group: root
     - mode: '0755'
 
+/usr/local/etc/oui.txt:
+  cmd.run:
+    - name: curl -L http://standards-oui.ieee.org/oui/oui.txt -o /usr/local/etc/oui.txt
+    - creates: /usr/local/etc/oui.txt
+
 # instance configurations
 {% for domain_key, domain_val in salt['pillar.get']('domains', {}).items() %}
 /etc/dhcp/conf.d/dom{{ domain_val['domain_id'] }}.conf:
