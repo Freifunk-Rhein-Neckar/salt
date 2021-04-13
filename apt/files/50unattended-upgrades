@@ -1,0 +1,21 @@
+Unattended-Upgrade::Origins-Pattern {
+	// debian
+	"origin=Debian,codename=${distro_codename},label=Debian";
+	"origin=Debian,codename=${distro_codename}-updates";
+	"origin=Debian,codename=${distro_codename},label=Debian-Security";
+	"origin=Debian Backports,codename=${distro_codename}-backports,label=Debian Backports";
+	// third party
+	"origin=Docker,archive=${distro_codename}";
+	"origin=elastic,archive=stable";
+	"origin=grafana stable,archive=stable";
+	"origin=InfluxDB,codename=${distro_codename}";
+	"origin=Node Source,codename=${distro_codename}";
+	"origin=yarn,archive=stable";
+};
+
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Mail "noc@ffrn.de";
+Unattended-Upgrade::MailOnlyOnError "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+
+APT::Periodic::RandomSleep "1800";
