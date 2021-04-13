@@ -67,6 +67,7 @@ base:
     - www.website
     - knot.master
     - yanic.zonefile
+    - ffrn-node-manager
     # - nginx
 
   'tools-itter.ffrn.de':
