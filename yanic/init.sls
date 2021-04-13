@@ -4,6 +4,7 @@
 
 include:
   - golang
+  - nftables
 
 yanic:
   user.present:
@@ -16,7 +17,8 @@ yanic:
     - target: {{ gopath }}/src/github.com/FreifunkBremen/yanic
     - force_fetch: True
     - force_reset: True
-    - refspec_branch: master
+    - rev: HEAD
+    - refspec_branch: main
     - user: yanic
     - require:
       - user: yanic
