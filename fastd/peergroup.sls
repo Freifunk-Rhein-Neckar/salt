@@ -1,5 +1,6 @@
 ---
 include:
+  - systemd.daemon-reload
   - common.packages.git
 
 /var/lib/fastd/peer_groups:
@@ -45,6 +46,8 @@ include:
     - template: jinja
     - context:
         group: {{ group_name }}
+    - require:
+      - file: /usr/local/sbin/fastd-peergroup-update-{{ group_name }}
 
 /etc/systemd/system/fastd-peergroup-{{ group_name }}.timer:
   file.managed:
@@ -55,12 +58,17 @@ include:
     - template: jinja
     - context:
         group: {{ group_name }}
+    - onchanges_in:
+      - cmd: systemctl daemon-reload
 
 fastd-peergroup-{{ group_name }}.timer:
   service.running:
     - enable: True
     - require:
       - file: /etc/systemd/system/fastd-peergroup-{{ group_name }}.service
+      - file: /etc/systemd/system/fastd-peergroup-{{ group_name }}.timer
+    - watch:
+      - file: /etc/systemd/system/fastd-peergroup-{{ group_name }}.timer
 
 /usr/local/sbin/fastd-peergroup-update-{{ group_name }}:
   file.managed:
