@@ -1,2 +1,6 @@
 # allow user mesh-announce to call batctl
-mesh-announce ALL= NOPASSWD: /usr/sbin/batctl
+Cmnd_Alias BATCTL = /usr/sbin/batctl
+mesh-announce ALL= NOPASSWD: BATCTL
+
+# don't log batctl calls
+Defaults!BATCTL !syslog, !pam_session

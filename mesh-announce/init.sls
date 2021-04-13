@@ -1,6 +1,7 @@
 ---
 include:
   - nftables
+  - systemd.daemon-reload
 
 {% import 'nftables/macro.sls' as nftables %}
 
@@ -10,6 +11,8 @@ mesh-announce:
   user.present:
     - shell: /usr/sbin/nologin
     - createhome: False
+    - usergroup: True
+    - system: True
   service.running:
     - enable: True
     - require:
@@ -18,13 +21,14 @@ mesh-announce:
       - file: /etc/mesh-announce/mesh-announce.conf
       - file: /etc/systemd/system/mesh-announce.service
 
-https://github.com/Freifunk-Rhein-Neckar/mesh-announce.git:
+https://github.com/ffnord/mesh-announce.git:
   git.latest:
     - target: /opt/mesh-announce
     - force_fetch: true
     - force_reset: true
-    - refspec_branch: main
-    - rev: main
+    - branch: {{ salt['pillar.get']('mesh-announce:branch', 'master') }}
+    - refspec_branch: {{ salt['pillar.get']('mesh-announce:branch', 'master') }}
+    - rev: {{ salt['pillar.get']('mesh-announce:rev', 'HEAD') }}
     - watch_in:
       - service: mesh-announce
 
@@ -44,6 +48,8 @@ https://github.com/Freifunk-Rhein-Neckar/mesh-announce.git:
     - user: root
     - group: root
     - mode: '0644'
+    - onchanges_in:
+      - cmd: systemctl daemon-reload
 
 /etc/sudoers.d/mesh-announce:
   file.managed:

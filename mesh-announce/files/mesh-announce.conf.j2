@@ -1,41 +1,49 @@
-{%- set hardware_model = salt['pillar.get']('nodeinfo:hardware:model', '') %}
-{%- set contact = salt['pillar.get']('nodeinfo:owner:contact', '') %}
-{%- set latitude = salt['pillar.get']('nodeinfo:location:latitude', '') %}
-{%- set longitude = salt['pillar.get']('nodeinfo:location:longitude', '') %}
+{%- set hardware_model = salt['pillar.get']('nodeinfo:hardware:model', '') -%}
+{%- set contact = salt['pillar.get']('nodeinfo:owner:contact', '') -%}
+{%- set latitude = salt['pillar.get']('nodeinfo:location:latitude', '') -%}
+{%- set longitude = salt['pillar.get']('nodeinfo:location:longitude', '') -%}
 
 # Default settings
 [Defaults]
 # Listen port, defaults to 1001
 Port: 1001
-# Default multicast listen addresses
+# Default link local listen addresses
 MulticastLinkAddress: ff02::2:1001
+# Default site local listen addresses
 MulticastSiteAddress: ff05::2:1001
+# Default domain - incoming requests that can not be mapped to a domain are mapped to this domain
+DefaultDomain: ffrn
 # Default domain type
 DomainType: batadv
-{%- if hardware_model != "" %}
-Hardware-Model: {{ hardware_model }}
-{%- endif %}
-{%- if contact != "" %}
-Contact: {{ contact }}
-{%- endif %}
-{%- if latitude != "" %}
-Latitude: {{ latitude }}
-{%- endif %}
-{%- if longitude != "" %}
-Longitude: {{ longitude }}
-{%- endif %}
 {%- if not ("roles" in pillar and ('gateway4' in pillar.roles or 'gateway6' in pillar.roles)) %}
 VPNProtocols: None
 {%- else %}
+# Default fastd-public-key to use
 FastdPublicKey: {{ salt['pillar.get']('fastd:key:secret') }}
 VPNProtocols: fastd
+{%- endif %}
+Hostname: {{ salt['grains.get']('fqdn', '') }}
+{%- if hardware_model != "" %}
+# Hardware used by the system
+Hardware-Model: {{ hardware_model }}
+{%- endif %}
+{%- if contact != "" %}
+# Contact information of owner
+Contact: {{ contact }}
+{%- endif %}
+{%- if latitude != "" %}
+# Latitude of the system
+Latitude: {{ latitude }}
+{%- endif %}
+{%- if longitude != "" %}
+# Longitude of the system
+Longitude: {{ longitude }}
 {%- endif %}
 VPN: {% if not ("roles" in pillar and ('gateway4' in pillar.roles or 'gateway6' in pillar.roles)) %}False{% else %}True{% endif %}
 
 {% for domain in salt['pillar.get']('domains').keys() %}
 {%- if domain == "dom0" %}
 [ffrn]
-Hostname: {{ salt['grains.get']('fqdn', '') }}
 {%- else %}
 [{{ domain }}]
 Hostname: {{ domain }}.{{ salt['grains.get']('fqdn', '') }}
