@@ -25,8 +25,9 @@ borgmatic:
     - makedirs: True
     - watch_in:
       - service: borgmatic
-    - required:
+    - require:
       - pkg: borgmatic
+    - check_cmd: validate-borgmatic-config --config
 
 borgmatic init --encryption repokey:
   cmd.watch:

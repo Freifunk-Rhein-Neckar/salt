@@ -266,7 +266,7 @@ retention:
     # prefix.  Borg placeholders can be used. See the output of
     # "borg help placeholders" for details. Defaults to
     # "{hostname}-". Use an empty value to disable the default.
-    prefix: {{ salt['pillar.get']('borg:retention:prefix', "{hostname}-") }}
+    prefix: "{{ salt['pillar.get']('borg:retention:prefix', "{hostname}-") }}"
 
 {% if salt['pillar.get']('borg:consistency') %}
 # Consistency checks to run after backups. See
