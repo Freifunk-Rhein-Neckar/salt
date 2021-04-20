@@ -5,7 +5,8 @@ fdc3:67ce:cc7e::/48,
 2a01:4f8:171:3242::/64,
 2a01:4f8:172:1713::/64,
 2a01:4f8:140:4093::/64,
-2a01:4f8:c17:6b7f::/64
+2a01:4f8:c17:6b7f::/64,
+2a02:c207:3001:370::/64
 }
 
 define allow_ipv4 = {
@@ -17,5 +18,6 @@ table inet filter {
     chain input {
         meta l4proto { tcp, udp } @th,16,16 53 ip6 saddr $allow_ipv6 accept comment "accept knot-resolver (IPv6)"
         meta l4proto { tcp, udp } @th,16,16 53 ip  saddr $allow_ipv4 accept comment "accept knot-resolver (IPv4)"
+        ip6 saddr { fd34:fe56:7891:900::/56, fd34:fe56:7891:4000::/50 } tcp dport 8453 accept comment "knot-resolver webmgmt (IPv6)"
     }
 }

@@ -8,6 +8,8 @@
 -- Network interface configuration
 net.listen('127.0.0.1', 53, { kind = 'dns' })
 net.listen('::1', 53, { kind = 'dns', freebind = true })
+net.listen('127.0.0.1', 8453, { kind = 'webmgmt', freebind = true })
+net.listen('::1', 8453, { kind = 'webmgmt', freebind = true })
 
 {{ salt['pillar.get']('knot-resolver:net:listen') }}
 
@@ -20,7 +22,17 @@ modules = {
         'hints > iterate',  -- Load /etc/hosts and allow custom root hints
         'stats',            -- Track internal statistics
         'predict',          -- Prefetch expiring/frequent records
+        'http',
 }
+
+http.prometheus.namespace = 'resolver_'
+
+http.config({
+        tls = true,
+        cert = '/etc/knot-resolver/fullchain.pem',
+        key = '/etc/knot-resolver/privkey.pem',
+        geoip = '/opt/GeoLite2-City_20210413/GeoLite2-City.mmdb',
+})
 
 -- DNSSEC validation failure logging
 modules.load('bogus_log')

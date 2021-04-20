@@ -4,7 +4,9 @@
 
 knot-resolver_install:
   pkg.installed:
-    - name: knot-resolver
+    - pkgs:
+      - knot-resolver
+      - knot-resolver-module-http
 
 
 {% if salt['grains.get']('os_family') == 'Debian' %}

@@ -12,6 +12,6 @@
     - template: jinja
     - mode: '0640'
     - require:
-      - pkg: knot-resolver
+      - pkg: knot-resolver_install
     - watch_in:
       - service: kresd@1_service
