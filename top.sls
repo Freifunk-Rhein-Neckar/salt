@@ -25,6 +25,14 @@ base:
     - borg
     - borg.borgmatic
 
+  'osfinger:Debian-11':
+    - match: grain
+    - systemd.resolved
+
+  'osfinger:Debian-10':
+    - match: grain
+    - common.resolv
+
   # physical Servers - `salt -I 'roles:vmhost' state.apply`
   'roles:vmhost':
     - match: pillar
