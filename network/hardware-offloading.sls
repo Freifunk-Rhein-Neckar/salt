@@ -23,7 +23,9 @@ include:
       - cmd: systemctl daemon-reload
 
 network-hardware-offloading.service:
-  service.enabled: []
+  service.enabled:
+    - require:
+      - file: /etc/systemd/system/network-hardware-offloading.service
 
 systemctl start network-hardware-offloading.service:
   cmd.run:
