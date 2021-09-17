@@ -15,13 +15,16 @@ include:
 {% endif %}
 
 prometheus-node-exporter:
-  pkg.installed:
-    - pkgs:
-      - prometheus-node-exporter
+  pkg.installed: []
   service.running:
     - enable: True
     - watch:
       - file: /etc/default/prometheus-node-exporter
+
+{% if grains['osfullname'] == "Debian" and grains['osmajorrelease'] >= 11 %}
+prometheus-node-exporter-collectors:
+  pkg.installed: []
+{% endif %}
 
 /etc/default/prometheus-node-exporter:
   file.managed:
