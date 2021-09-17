@@ -66,6 +66,9 @@ include:
           ip link delete dom{{ domain_id }}-bat 2>/dev/null
           ip link add dom{{ domain_id }}-bat type batadv
           ip link set up dev dom{{ domain_id }}-bat
+    {%- for instance in salt['pillar.get']('domains:%s:fastd'|format(domain))['instances'] %}
+          systemctl is-active --quiet fastd@dom{{ domain_id }}_{{ instance['mtu'] }}.service && systemctl restart fastd@dom{{ domain_id }}_{{ instance['mtu'] }}.service
+    {% endfor %}
 
 dom{{ domain_id }}-network-up-cron:
   cron:
