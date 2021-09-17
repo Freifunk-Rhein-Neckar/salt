@@ -3,4 +3,8 @@
     'packages': ['golang-1.11'],
     'go_executable': '/usr/lib/go-1.11/bin/go'
   },
+  'Debian-11': {
+    'packages': ['golang-1.15'],
+    'go_executable': '/usr/lib/go-1.15/bin/go'
+  },
 }, merge=salt['pillar.get']('golang'), grain='osfinger') %}
