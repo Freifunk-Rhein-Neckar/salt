@@ -1,7 +1,6 @@
 ---
 fastd:
-  pkg.installed:
-    - fromrepo: {{ grains['oscodename'] }}-backports
+  pkg.installed: []
 
 /etc/apt/preferences.d/backports-fastd:
   file.managed:
@@ -9,6 +8,8 @@ fastd:
         Package: fastd
         Pin: release n={{ grains['oscodename'] }}-backports
         Pin-Priority: 900
+    - require_in:
+      - pkg: fastd
 
 /opt/ff-tools/fastd-statistics.py:
   file.managed:
