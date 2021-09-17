@@ -1,5 +1,4 @@
 [Path]
-PathExists=/var/lib/knot/zones/nodes.ffrn.de.zone
 PathChanged=/var/lib/knot/zones/nodes.ffrn.de.zone
 
 [Install]

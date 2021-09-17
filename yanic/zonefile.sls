@@ -1,4 +1,7 @@
 ---
+include:
+  - systemd.daemon-reload
+
 yanic-to-zonefile:
   user.present:
     - home: /var/lib/yanic-to-zonefile
@@ -19,6 +22,8 @@ yanic-to-zonefile:
     - user: root
     - group: root
     - mode: '0644'
+    - onchanges_in:
+      - cmd: systemctl daemon-reload
 
 /etc/systemd/system/yanic-to-zonefile.timer:
   file.managed:
@@ -26,6 +31,8 @@ yanic-to-zonefile:
     - user: root
     - group: root
     - mode: '0644'
+    - onchanges_in:
+      - cmd: systemctl daemon-reload
 
 /var/lib/yanic-to-zonefile/yanicOutputToZonefile/config.py:
   file.managed:
@@ -52,6 +59,8 @@ yanic-to-zonefile.timer:
     - user: root
     - group: root
     - mode: '0644'
+    - onchanges_in:
+      - cmd: systemctl daemon-reload
 
 /etc/systemd/system/yanic-to-zonefile-reload.path:
   file.managed:
@@ -59,6 +68,8 @@ yanic-to-zonefile.timer:
     - user: root
     - group: root
     - mode: '0644'
+    - onchanges_in:
+      - cmd: systemctl daemon-reload
 
 yanic-to-zonefile-reload.path:
   service.running:

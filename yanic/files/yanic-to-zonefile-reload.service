@@ -2,6 +2,7 @@
 Description=Reloads the nodes.ffrn.de zone on change
 Wants=network-online.target
 After=network-online.target
+After=knot.service
 
 [Service]
 Type=oneshot
