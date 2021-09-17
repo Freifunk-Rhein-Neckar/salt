@@ -115,7 +115,7 @@ deploy_cert() {
     # cp "${KEYFILE}" "${FULLCHAINFILE}" /etc/nginx/ssl/; chown -R nginx: /etc/nginx/ssl
 
     if service_exists nginx; then
-        output=$( /usr/sbin/nginx -t )
+        output=$( /usr/sbin/nginx -t 2>&1 )
         reload_code=$?
         if [ $reload_code -eq 0 ]; then
             systemctl reload nginx
