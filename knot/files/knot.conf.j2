@@ -6,21 +6,25 @@
 # This file is managed by Salt.
 
 {%- macro ouput_knot_section(section_name, first_param_name="") -%}
-{%- if knot[section_name] is defined %}
+  {%- if knot[section_name] is defined %}
 {{ section_name }}:
-{%- for block_name, blockvar in knot[section_name].items() %}
-  {%- if first_param_name != "" %}
+    {%- for block_name, block_var in knot[section_name].items() %}
+      {%- if block_var is string %}
+  {{ block_name }}: {{ block_var }}
+      {%- else %}
+        {%- if first_param_name != "" %}
   - {{ first_param_name }}: {{ block_name }}
-  {%- endif %}
-    {%- for param_name, param_value in blockvar.items() %}
-    {%- if param_value | is_list %}
+        {%- endif %}
+        {%- for param_name, param_value in block_var.items() %}
+          {%- if param_value | is_list %}
     {{ param_name }}: {{ param_value | tojson }}
-    {%- else %}
+          {%- else %}
     {{ param_name }}: {{ param_value }}
-    {%- endif %}
+          {%- endif %}
+        {%- endfor %}
+      {%- endif %}
     {%- endfor %}
-{%- endfor %}
-{%- endif %}
+  {%- endif %}
 {%- endmacro %}
 
 {{- ouput_knot_section('module', 'id') }}
@@ -48,5 +52,7 @@
 {{- ouput_knot_section('policy', 'id') }}
 
 {{- ouput_knot_section('template', 'id') }}
+
+{{- ouput_knot_section('mod-synthrecord', 'id') }}
 
 {{- ouput_knot_section('zone', 'domain') }}
