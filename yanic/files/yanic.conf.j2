@@ -3,4 +3,133 @@
 # Your changes will be overwritten.
 ########################################################################
 
-{{ salt.slsutil.serialize('toml', salt['pillar.get']('yanic:conf')) }}
+# This is the config file for Yanic written in "Tom's Obvious, Minimal Language."
+# syntax: https://github.com/toml-lang/toml
+# (if you need somethink multiple times, checkout out the [[array of table]] section)
+
+# Send respondd request to update information
+[respondd]
+enable           = true
+# Delay startup until a multiple of the period since zero time
+synchronize      = "1m"
+# how oftern request per multicast
+collect_interval = "1m"
+
+[respondd.sites.ffrn]
+domains          = [{% for domain_code in salt['domains.domain_codes']() %}"{{ domain_code }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+
+{%- for domain in salt['pillar.get']('domains').keys() %}
+[[respondd.interfaces]]
+ifname           = "{{ domain }}-br"
+multicast_address = "ff05::2:1001"
+port = 10001
+{%- endfor %}
+
+# A little built-in webserver, which statically serves a directory.
+# This is useful for testing purposes or for a little standalone installation.
+[webserver]
+enable  = false
+bind    = "127.0.0.1:8080"
+webroot = "/var/www/html/meshviewer"
+
+[nodes]
+# Cache file
+# a json file to cache all data collected directly from respondd
+state_path     = "/var/lib/yanic/state.json"
+# prune data in RAM, cache-file and output json files (i.e. nodes.json)
+# that were inactive for longer than
+prune_after = "90d"
+# Export nodes and graph periodically
+save_interval = "5s"
+# Set node to offline if not seen within this period
+offline_after = "10m"
+
+## [[nodes.output.-]]
+# every output:
+#  needs to be enabled just adding:
+#    enable = true
+#  could filter the nodes by using a there filter entry (see output meshviewer)
+#   [nodes.output.-.filter]
+#  could be used multiple times (suggested by the "[[...]]" instatt of "[...]")
+#  it is useful for e.g. filter by different array and use multiple meshviewers
+
+
+[[nodes.output.geojson]]
+enable = true
+path     = "/var/www/data/nodes.geojson"
+[nodes.output.geojson.filter]
+no_owner = true
+
+[[nodes.output.raw]]
+enable = true
+path     = "/var/www/data/raw.json"
+[nodes.output.raw.filter]
+no_owner = true
+
+[[nodes.output.meshviewer-ffrgb]]
+enable   = true
+path = "/var/www/data/meshviewer.json"
+[nodes.output.meshviewer-ffrgb.filter]
+no_owner = true
+# domain_as_site = true
+
+[[nodes.output.meshviewer]]
+enable = true
+version  = 2
+nodes_path     = "/var/www/data/nodes.json"
+graph_path     = "/var/www/data/graph.json"
+[nodes.output.meshviewer.filter]
+no_owner = true
+
+[[nodes.output.nodelist]]
+enable   = true
+path = "/var/www/data/nodelist.json"
+[nodes.output.nodelist.filter]
+no_owner = true
+
+[database]
+# cleaning data of measurement node,
+#   which are older than 7d
+delete_after = "1825d"
+#   how often run the cleaning
+delete_interval = "1h"
+
+## [[database.connection.-]]
+# every output:
+#  needs to be enabled just adding:
+#    enable = true
+#  could be used multiple times (suggested by the "[[...]]" instatt of "[...]")
+#  it is useful for e.g. save into a database before and behind a firewall
+
+# Save collected data to InfluxDB
+# there would be the following measurments:
+#  node: store node spezific data i.e. clients memory, airtime
+#  global: store global data, i.e. count of clients and nodes
+#  firmware: store count of nodes tagged with firmware
+#  model: store count of nodes tagged with hardware model
+[[database.connection.influxdb]]
+enable   = true
+address  = "https://stats.ffrn.de/influxdb"
+database = "ffrn"
+username = "{{ salt['pillar.get']('yanic:influxdb:username') }}"
+password = "{{ salt['pillar.get']('yanic:influxdb:password') }}"
+
+[[database.connection.graphite]]
+enable   = false
+address  = "localhost:2003"
+prefix   = "freifunk"
+
+# respondd (yanic)
+# forward collected respondd package to a address
+# (e.g. to another respondd collector like a central yanic instance or hopglass)
+[[database.connection.respondd]]
+enable   = false
+# type of network to create a connection
+type     = "udp6"
+# destination address to connect/send respondd package
+address = "stats.ffrn.de:11001"
+
+# Logging
+[[database.connection.logging]]
+enable   = false
+path = "/var/log/yanic/yanic.log"
