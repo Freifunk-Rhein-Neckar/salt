@@ -7,7 +7,9 @@ include:
   file.recurse:
     - source: salt://salt/minion/files/minion.d
     - clean: True
-    - exclude_pat: _schedule.conf
+    - exclude_pat: 
+      - _schedule.conf
+      - .*.swp
 
 salt-minion:
   pkg.installed: []
