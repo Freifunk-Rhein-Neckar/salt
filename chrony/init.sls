@@ -1,4 +1,10 @@
 ---
+
+{%- if salt['hardware.is_physical']() %}
+include:
+  - .nftables
+{%- endif %}
+
 chrony:
   pkg.installed: []
   service.running:

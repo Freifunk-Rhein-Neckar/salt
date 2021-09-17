@@ -1,0 +1,7 @@
+table inet filter {
+    chain input {
+        ip6 saddr 2a01:4f8:171:fc00::/56 udp dport {123, 323} counter accept comment "allow chrony (from IPv6 Client Network)"
+        meta iifname != {{ salt['pillar.get']('network:interface', "eth0") }} udp dport {123, 323} counter accept comment "allow chrony"
+
+    }
+}
