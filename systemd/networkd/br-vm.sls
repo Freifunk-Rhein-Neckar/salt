@@ -1,6 +1,9 @@
 ---
+{% import 'nftables/macro.sls' as nftables %}
+
 include:
   - .service
+  - nftables.tables.nat4
 
 /etc/systemd/network/30-br-vm.netdev:
   file.managed:
@@ -31,11 +34,14 @@ include:
           - Match:
             - Name: "br-vm"
           - Network:
-            - Address: "{{ salt['pillar.get']('network:br-vm:network:publicv4:address') }}/{{ salt['pillar.get']('network:br-vm:network:publicv4:mask', '32') }}"
             - Address: "{{ salt['pillar.get']('network:br-vm:network:privatev4:range') }}{{ salt['pillar.get']('network:br-vm:network:privatev4:bridge-ip', '1') }}/{{ salt['pillar.get']('network:br-vm:network:privatev4:mask', '24') }}"
+            - Address: "{{ salt['pillar.get']('network:br-vm:network:publicv4:address') }}/{{ salt['pillar.get']('network:br-vm:network:publicv4:mask', '32') }}"
             - Address: "{{ salt['pillar.get']('network:br-vm:network:publicv6:range') }}{{ salt['pillar.get']('network:br-vm:network:publicv6:bridge-ip', ':3') }}/{{ salt['pillar.get']('network:br-vm:network:publicv6:mask', '64') }}"
             - Address: "{{ salt['pillar.get']('network:br-vm:network:privatev6:range') }}{{ salt['pillar.get']('network:br-vm:network:privatev6:bridge-ip', ':1') }}/{{ salt['pillar.get']('network:br-vm:network:privatev6:mask', '64') }}"
             - Address: "fe80::1/64"
+            - ConfigureWithoutCarrier: "true"
+            - DHCPServer: "yes"
+            - IPv6SendRA: "yes"
 {%- for family in [6,4] %}
   {%- for ip in salt['pillar.get']('network:br-vm:additional_ipv' + family|string, []) %}
           - Route:
@@ -59,5 +65,23 @@ include:
             - Scope: "link"
   {% endfor %}
 {% endfor %}
+          - DHCPServer:
+            - PoolOffset: "20"
+            - PoolSize: "80"
+            - DefaultLeaseTimeSec: "24h"
+            - MaxLeaseTimeSec: "48h"
+            - DNS: "1.1.1.1"
+            - DNS: "1.0.0.1"
+            - EmitNTP: "yes"
+            - NTP: "{{ salt['pillar.get']('network:br-vm:network:privatev4:range') }}{{ salt['pillar.get']('network:br-vm:network:privatev4:bridge-ip', '1') }}"
+          - IPv6SendRA:
+            - DNS: "2606:4700:4700::1111"
+            - DNS: "2606:4700:4700::1001"
+            - Domains: "ffrn.de"
+            - DNSLifetimeSec: "6000"
+          - IPv6Prefix:
+            - Prefix: "{{ salt['pillar.get']('network:br-vm:network:publicv6:range') }}:/{{ salt['pillar.get']('network:br-vm:network:publicv6:mask', '64') }}"
     - watch_in:
       - service: systemd-networkd
+
+{{ nftables.include('20-host-nat', 'salt://systemd/networkd/files/nftables-host-nat.conf.j2' ) }}

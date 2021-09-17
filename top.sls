@@ -25,12 +25,13 @@ base:
     - borg
     - borg.borgmatic
 
-# physical Servers
+  # physical Servers - `salt -I 'roles:vmhost' state.apply`
   'roles:vmhost':
     - match: pillar
     - wireguard
     - kvm
     - network.hardware-offloading
+    - network.bridge
     - systemd.networkd
     - systemd.networkd.mainif
     - systemd.networkd.br-vm
@@ -102,10 +103,12 @@ base:
     - dehydrated
     - docker
 
+  # the master is deployed with `salt-call --local state.apply` from itself. This leaves less chances for an unwanted change.
   'master.ffrn.de':
     - salt.master
     - dehydrated
     - systemd.networkd.wg-ffrn-in
+    - kvm.virtinst
 
   'map.ffrn.de':
     - yanic

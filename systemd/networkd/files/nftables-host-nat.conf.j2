@@ -1,0 +1,8 @@
+{%- set public_interface = salt['pillar.get']('nftables:public_interface', 'eth0') -%}
+{%- set privateV4 = salt['pillar.get']('network:br-vm:network:privatev4:range') + "0/" + salt['pillar.get']('network:br-vm:network:privatev4:mask', '24') %}
+
+table ip nat {
+    chain POSTROUTING {
+        oifname "{{ public_interface }}" ip saddr {{ privateV4 }} counter snat to {{ salt['pillar.get']('network:br-vm:network:publicv4:address') }}
+    }
+}
