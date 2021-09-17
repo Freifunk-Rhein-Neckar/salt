@@ -86,6 +86,7 @@ base:
     - docker.compose
     - wireguard
     - common.packages.apache2-utils
+    - prometheus.blackbox-exporter
 
   'tickets.ffrn.de':
     - nftables

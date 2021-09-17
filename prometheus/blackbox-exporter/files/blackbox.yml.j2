@@ -1,0 +1,66 @@
+modules:
+  http_2xx:
+    prober: http
+  http_post_2xx:
+    prober: http
+    http:
+      method: POST
+  tcp_connect:
+    prober: tcp
+  pop3s_banner:
+    prober: tcp
+    tcp:
+      query_response:
+      - expect: "^+OK"
+      tls: true
+      tls_config:
+        insecure_skip_verify: false
+  ssh_banner:
+    prober: tcp
+    tcp:
+      query_response:
+      - expect: "^SSH-2.0-"
+  irc_banner:
+    prober: tcp
+    tcp:
+      query_response:
+      - send: "NICK prober"
+      - send: "USER prober prober prober :prober"
+      - expect: "PING :([^ ]+)"
+        send: "PONG ${1}"
+      - expect: "^:[^ ]+ 001"
+  icmp:
+    prober: icmp
+  icmp4:
+    prober: icmp
+    icmp:
+      preferred_ip_protocol: "ip4"
+      ip_protocol_fallback: false
+  icmp6:
+    prober: icmp
+    icmp:
+      preferred_ip_protocol: "ip6"
+      ip_protocol_fallback: false
+  dns_soa:
+    prober: dns
+    dns:
+      query_name: "ffrn.de"
+      query_type: "SOA"
+  dns_udp:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "youtube.com"
+      query_type: "AAAA"
+      transport_protocol: "udp"
+      valid_rcodes:
+      - NOERROR
+  dns_tcp:
+    prober: dns
+    timeout: 5s
+    dns:
+      query_name: "youtube.com"
+      query_type: "AAAA"
+      transport_protocol: "tcp"
+      valid_rcodes:
+      - NOERROR
