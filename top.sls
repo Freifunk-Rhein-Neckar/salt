@@ -54,6 +54,7 @@ base:
     - knot-resolver.nftables
 
   'v6upstream.ffrn.de':
+    - network.sysctl
     - knot-resolver
     - radvd
 

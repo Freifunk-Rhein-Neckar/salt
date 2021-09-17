@@ -1,6 +1,6 @@
 ---
 
-{% set sysctld = "/etc/sysctl.d" %}
+{% from './init.sls' import sysctld with context %}
 
 # arp/ndp
 net.ipv4.neigh.default.gc_thresh1:
@@ -32,34 +32,3 @@ net.ipv6.neigh.default.gc_thresh3:
   sysctl.present:
     - value: 8192
     - config: {{ sysctld }}/neigh.conf
-
-# forwarding
-net.ipv4.conf.all.forwarding:
-  sysctl.present:
-    - value: 1
-    - config: {{ sysctld }}/forward.conf
-
-net.ipv6.conf.all.forwarding:
-  sysctl.present:
-    - value: 1
-    - config: {{ sysctld }}/forward.conf
-
-net.core.rmem_max:
-  sysctl.present:
-    - value: 8388608
-    - config: {{ sysctld }}/rmem_max.conf
-
-net.core.rmem_default:
-  sysctl.present:
-    - value: 8388608
-    - config: {{ sysctld }}/rmem_default.conf
-
-net.core.wmem_max:
-  sysctl.present:
-    - value: 8388608
-    - config: {{ sysctld }}/wmem_max.conf
-
-net.core.wmem_default:
-  sysctl.present:
-    - value: 8388608
-    - config: {{ sysctld }}/wmem_default.conf
