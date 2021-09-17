@@ -21,8 +21,7 @@ batctl:
 {% else %}
 
 batctl:
-  pkg.installed:
-    - fromrepo: {{ grains['oscodename'] }}-backports
+  pkg.installed: []
 
 /etc/apt/preferences.d/backports-batctl:
   file.managed:
@@ -30,5 +29,7 @@ batctl:
         Package: batctl
         Pin: release n={{ grains['oscodename'] }}-backports
         Pin-Priority: 900
+    - require_in:
+      - pkg: batctl
 
 {% endif %}

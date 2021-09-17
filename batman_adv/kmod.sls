@@ -1,8 +1,8 @@
 ---
 {%- if salt['pillar.get']('batman_adv:commit', False) %}
 
-# include:
-#   - common.kernel
+include:
+  - common.kernel
 
 # build kmod from git when commit is given
 
