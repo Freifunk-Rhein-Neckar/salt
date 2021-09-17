@@ -8,7 +8,6 @@ knot-resolver_install:
       - knot-resolver
       - knot-resolver-module-http
 
-
 {% if salt['grains.get']('os_family') == 'Debian' %}
 knot-resolver_official_repo:
   pkgrepo.managed:

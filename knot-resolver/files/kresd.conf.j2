@@ -28,10 +28,8 @@ modules = {
 http.prometheus.namespace = 'resolver_'
 
 http.config({
-        tls = true,
-        cert = '/etc/knot-resolver/fullchain.pem',
-        key = '/etc/knot-resolver/privkey.pem',
-        geoip = '/opt/GeoLite2-City_20210413/GeoLite2-City.mmdb',
+        tls = false,
+        geoip = '/opt/GeoLite2-City/GeoLite2-City.mmdb',
 })
 
 -- DNSSEC validation failure logging
