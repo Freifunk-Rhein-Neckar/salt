@@ -15,7 +15,6 @@ base:
   'os:Debian':
     - match: grain
     - apt
-    - common.resolv
     - common.kernel
     - common.datetime
     - common.systemd
@@ -54,8 +53,10 @@ base:
     - network.domains
     - batman_adv
     - mesh-announce
+    - network.batman-adv
 
   'resolver*.ffrn.de':
+    - systemd.networkd.mainif
     - nftables
     - network.conntrack
     - dehydrated
@@ -63,13 +64,19 @@ base:
     - knot-resolver.nftables
 
   'v6upstream.ffrn.de':
+    - systemd.networkd.mainif
+    - nginx.nftables
+    - dehydrated
+    - network.bridge
     - network.sysctl
+    - network.conntrack
     - knot-resolver
+    - knot-resolver.nftables
     - radvd
 
   'tools*.ffrn.de':
-    - telegraf
-    - docker.compose
+    - systemd.networkd.mainif
+    {# - docker.compose #}
     - knot
     - dehydrated
 
@@ -93,7 +100,8 @@ base:
     - nginx
     - knot
     - dehydrated
-    - docker.compose
+    {# - docker
+    - docker.compose.ng #}
     - wireguard
     - common.packages.apache2-utils
     - prometheus.blackbox-exporter
@@ -107,23 +115,26 @@ base:
   'forum.ffrn.de':
     # - nftables       # not working with docker
     # - nginx.nftables # not working with docker
+    - systemd.networkd.mainif
     - nginx
     - dehydrated
-    - docker
+    {# - docker #}
 
   # the master is deployed with `salt-call --local state.apply` from itself. This leaves less chances for an unwanted change.
   'master.ffrn.de':
     - salt.master
     - dehydrated
     - systemd.networkd.wg-ffrn-in
+    - systemd.networkd.mainif
     - kvm.virtinst
 
-  'map.ffrn.de':
+  'map*.ffrn.de':
     - yanic
     - nginx
     - nginx.nftables
     - dehydrated
     - meshviewer
+    - prometheus.blackbox-exporter
 
   'meet.ffrn.de':
     - nftables
@@ -134,6 +145,7 @@ base:
     - telegraf
 
   'unifi.ffrn.de':
+    - systemd.networkd.mainif
     - nftables
     - nginx
     - dehydrated
@@ -142,6 +154,8 @@ base:
     - mesh-announce
 
   'gw*.ffrn.de':
+    - systemd.networkd.mainif
+    - nginx.nftables
     - nftables
     - network.bridge
     - network.sysctl
