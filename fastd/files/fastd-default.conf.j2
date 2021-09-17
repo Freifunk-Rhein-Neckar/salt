@@ -6,10 +6,10 @@ hide mac addresses yes;
 status socket "/run/fastd-dom{{ domain_id }}-vpn-{{ mtu }}.sock";
 
 interface "dom{{ domain_id }}-vpn-{{ mtu }}";
-{% for host in grains['fqdn_ip4'] | unique %}
+{% for host in pillar['fqdn_ip4'] | unique %}
 bind {{ host }}:{{ port }};
 {%- endfor %}
-{% for host in grains['fqdn_ip6'] | unique if not host.startswith('fe80:') %}
+{% for host in pillar['fqdn_ip6'] | unique if not host.startswith('fe80:') %}
 bind [{{ host }}]:{{ port }};
 {%- endfor %}
 

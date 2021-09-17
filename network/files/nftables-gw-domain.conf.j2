@@ -6,7 +6,7 @@
 {% if "roles" in pillar and 'gateway4' in pillar.roles %}
 table ip nat {
     chain POSTROUTING {
-        oifname "{{ public_interface }}" ip saddr { {{ ', '.join(nets4) }} } counter snat to {{ grains['fqdn_ip4'][0] }};
+        oifname "{{ public_interface }}" ip saddr { {{ ', '.join(nets4) }} } counter snat to {{ pillar['fqdn_ip4'][0] }};
     }
 }
 {% endif %}
